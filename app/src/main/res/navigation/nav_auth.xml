@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:startDestination="@id/splashFragment">
+
+    <!-- Splash Screen -->
+    <fragment android:id="@+id/splashFragment">
+        <action
+            android:id="@+id/action_splash_to_login"
+            app:destination="@id/loginFragment"/>
+    </fragment>
+
+    <!-- Login -->
+    <fragment android:id="@+id/loginFragment">
+        <action
+            android:id="@+id/action_login_to_dashboard"
+            app:destination="@id/dashboardFragment"/>
+        <action
+            android:id="@+id/action_login_to_register"
+            app:destination="@id/registerFragment"/>
+    </fragment>
+
+    <!-- Register -->
+    <fragment android:id="@+id/registerFragment">
+        <action
+            android:id="@+id/action_register_to_biometric"
+            app:destination="@id/biometricSetupFragment"/>
+    </fragment>
+
+    <!-- Biometric Setup -->
+    <fragment android:id="@+id/biometricSetupFragment">
+        <action
+            android:id="@+id/action_biometric_to_dashboard"
+            app:destination="@id/dashboardFragment"/>
+    </fragment>
+
+    <!-- Dashboard -->
+    <fragment
+        android:id="@+id/dashboardFragment"
+        android:label="Dashboard" />
+
+</navigation>
