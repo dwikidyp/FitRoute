@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
+import com.fitroute.data.repository.UserRepository
 import kotlinx.coroutines.launch
 
 // Sealed class Result
@@ -121,6 +122,24 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private fun isTokenExpired(token: String): Boolean {
-        return false // Sesuaikan dengan logika JWT kamu
+        return false
+    }
+
+    private val userRepository = UserRepository()
+
+    // Fungsi logout
+    fun logout() {
+        viewModelScope.launch {
+            // 1. Hapus token dari EncryptedSharedPrefs
+            securePrefs.edit()
+                .remove("auth_token")
+                .apply()
+
+            // 2. Hapus data lokal pengguna
+            userRepository.clearLocalData()
+
+            // 3. Kembali ke halaman login
+            _authState.postValue(AuthState.LoggedOut)
+        }
     }
 }

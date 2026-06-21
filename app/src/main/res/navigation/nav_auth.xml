@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_auth"
     app:startDestination="@id/splashFragment">
 
-    <!-- Splash Screen -->
-    <fragment android:id="@+id/splashFragment">
+    <fragment
+        android:id="@+id/splashFragment"
+        android:name="com.fitroute.ui.auth.SplashFragment"> <!-- ← pastikan package benar -->
         <action
             android:id="@+id/action_splash_to_login"
             app:destination="@id/loginFragment"/>
@@ -13,8 +15,9 @@
             app:destination="@id/dashboardFragment"/>
     </fragment>
 
-    <!-- Login -->
-    <fragment android:id="@+id/loginFragment">
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.fitroute.ui.auth.LoginFragment">
         <action
             android:id="@+id/action_login_to_dashboard"
             app:destination="@id/dashboardFragment"/>
@@ -23,23 +26,30 @@
             app:destination="@id/registerFragment"/>
     </fragment>
 
-    <!-- Register -->
-    <fragment android:id="@+id/registerFragment">
+    <fragment
+        android:id="@+id/registerFragment"
+        android:name="com.fitroute.ui.auth.RegisterFragment">
         <action
             android:id="@+id/action_register_to_biometric"
             app:destination="@id/biometricSetupFragment"/>
     </fragment>
 
-    <!-- Biometric Setup -->
-    <fragment android:id="@+id/biometricSetupFragment">
+    <fragment
+        android:id="@+id/biometricSetupFragment"
+        android:name="com.fitroute.ui.auth.BiometricSetupFragment">
         <action
             android:id="@+id/action_biometric_to_dashboard"
             app:destination="@id/dashboardFragment"/>
     </fragment>
 
-    <!-- Dashboard -->
     <fragment
         android:id="@+id/dashboardFragment"
-        android:label="Dashboard" />
+        android:name="com.fitroute.ui.dashboard.DashboardFragment">
+        <action
+            android:id="@+id/action_dashboard_to_login"
+            app:destination="@id/loginFragment"
+            app:popUpTo="@id/splashFragment"
+            app:popUpToInclusive="true"/>
+    </fragment>
 
 </navigation>
