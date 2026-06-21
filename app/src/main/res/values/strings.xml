@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">FitRoute</string>
+    <string-array name="gender_options">
+        <item>Laki-laki</item>
+        <item>Perempuan</item>
+    </string-array>
 </resources>

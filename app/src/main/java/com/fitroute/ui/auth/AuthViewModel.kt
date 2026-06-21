@@ -9,18 +9,36 @@ import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import kotlinx.coroutines.launch
 
-// Sealed class untuk status autentikasi
+// Sealed class Result
+sealed class Result<out T> {
+    data class Success<T>(val data: T) : Result<T>()
+    data class Error(val message: String) : Result<Nothing>()
+    object Loading : Result<Nothing>()
+}
+
+// Sealed class AuthState
 sealed class AuthState {
     object LoggedIn : AuthState()
     object LoggedOut : AuthState()
 }
+
+// Data class response token
+data class AuthResponse(val token: String)
 
 class AuthViewModel(application: Application) : AndroidViewModel(application) {
 
     private val _authState = MutableLiveData<AuthState>()
     val authState: LiveData<AuthState> = _authState
 
-    // Inisialisasi EncryptedSharedPreferences
+    private val _loginResult = MutableLiveData<Result<AuthResponse>>()
+    val loginResult: LiveData<Result<AuthResponse>> = _loginResult
+
+    private val _registerResult = MutableLiveData<Result<Unit>>()
+    val registerResult: LiveData<Result<Unit>> = _registerResult
+
+    private val _biometricEnrollResult = MutableLiveData<Result<Unit>>()
+    val biometricEnrollResult: LiveData<Result<Unit>> = _biometricEnrollResult
+
     private val securePrefs = EncryptedSharedPreferences.create(
         application,
         "secure_prefs",
@@ -31,10 +49,10 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
         EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
     )
 
+    // Cek sesi login sebelumnya
     fun checkSession() {
         viewModelScope.launch {
             val token = securePrefs.getString("auth_token", null)
-
             if (token != null && !isTokenExpired(token)) {
                 _authState.postValue(AuthState.LoggedIn)
             } else {
@@ -43,10 +61,66 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    // Cek apakah token sudah expired
+    // Login dengan email & password
+    fun loginWithEmail(email: String, password: String) {
+        viewModelScope.launch {
+            _loginResult.postValue(Result.Loading)
+            try {
+                // TODO: Ganti dengan API call Retrofit
+                // val response = authRepository.login(email, password)
+                // Simulasi sukses:
+                val fakeToken = "eyJhbGciOiJIUzI1NiJ9.fake_token"
+                _loginResult.postValue(Result.Success(AuthResponse(fakeToken)))
+            } catch (e: Exception) {
+                _loginResult.postValue(Result.Error(e.message ?: "Login gagal"))
+            }
+        }
+    }
+
+    // Registrasi user baru
+    fun register(user: UserRequest) {
+        viewModelScope.launch {
+            _registerResult.postValue(Result.Loading)
+            try {
+                // TODO: Implementasi registrasi dengan Retrofit
+                // Simulasi sukses:
+                _registerResult.postValue(Result.Success(Unit))
+            } catch (e: Exception) {
+                _registerResult.postValue(Result.Error(e.message ?: "Registrasi gagal"))
+            }
+        }
+    }
+
+    // Login dengan biometric (gunakan token tersimpan)
+    fun loginWithBiometric() {
+        viewModelScope.launch {
+            val token = securePrefs.getString("auth_token", null)
+            if (token != null) {
+                _loginResult.postValue(Result.Success(AuthResponse(token)))
+            } else {
+                _loginResult.postValue(Result.Error("Token tidak ditemukan, login dengan email"))
+            }
+        }
+    }
+
+    fun enrollBiometric(publicKey: String) {
+        viewModelScope.launch {
+            _biometricEnrollResult.postValue(Result.Loading)
+            try {
+                // TODO: Kirim public key ke server
+                _biometricEnrollResult.postValue(Result.Success(Unit))
+            } catch (e: Exception) {
+                _biometricEnrollResult.postValue(Result.Error(e.message ?: "Enrollment gagal"))
+            }
+        }
+    }
+
+    // Simpan token ke EncryptedSharedPreferences
+    fun saveToken(token: String) {
+        securePrefs.edit().putString("auth_token", token).apply()
+    }
+
     private fun isTokenExpired(token: String): Boolean {
-        // Implementasi logika cek expiry token
-        // Contoh sederhana: selalu valid (sesuaikan dengan JWT/logika kamu)
-        return false
+        return false // Sesuaikan dengan logika JWT kamu
     }
 }
