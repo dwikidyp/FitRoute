@@ -9,6 +9,16 @@
     <!-- Internet untuk sinkronisasi -->
     <uses-permission android:name="android.permission.INTERNET"/>
 
+    <!-- Izin lokasi -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION"/>
+
+    <!-- Sensor barometer -->
+    <uses-feature
+        android:name="android.hardware.sensor.barometer"
+        android:required="false"/>
+
 
     <application
         android:allowBackup="true"
