@@ -1,119 +1,449 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#F5F5F5"
+    android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="24dp">
+        android:orientation="vertical">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Daftar Akun"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="24dp"/>
-
-        <!-- Nama -->
-        <com.google.android.material.textfield.TextInputLayout
+        <!-- Bagian atas hijau -->
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Nama Lengkap"
-            android:layout_marginBottom="12dp">
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-        </com.google.android.material.textfield.TextInputLayout>
+            android:layout_height="140dp"
+            android:background="@drawable/bg_register_top"
+            android:orientation="vertical"
+            android:padding="28dp"
+            android:gravity="bottom">
 
-        <!-- Email -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Email"
-            android:layout_marginBottom="12dp">
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etEmail"
+            <!-- Tombol Back -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textEmailAddress"/>
-        </com.google.android.material.textfield.TextInputLayout>
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="8dp">
 
-        <!-- Password -->
-        <com.google.android.material.textfield.TextInputLayout
+                <TextView
+                    android:id="@+id/btnBack"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="←"
+                    android:textColor="#FFFFFF"
+                    android:textSize="22sp"
+                    android:layout_marginEnd="12dp"/>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Buat akun\nbaru"
+                        android:textColor="#FFFFFF"
+                        android:textSize="22sp"
+                        android:textStyle="bold"
+                        android:lineSpacingMultiplier="1.1"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Isi data profilmu"
+                        android:textColor="#99FFFFFF"
+                        android:textSize="13sp"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- Form Register -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Password"
-            android:layout_marginBottom="12dp">
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etPassword"
+            android:orientation="vertical"
+            android:padding="24dp"
+            android:paddingTop="28dp">
+
+            <!-- Nama Lengkap -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Nama lengkap"
+                android:textColor="#1B4332"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="6dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@drawable/bg_input_field"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:layout_marginBottom="16dp">
+
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:src="@android:drawable/ic_menu_my_calendar"
+                    android:tint="#2D6A4F"
+                    android:layout_marginEnd="10dp"/>
+
+                <EditText
+                    android:id="@+id/etName"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@null"
+                    android:hint="Masukkan nama kamu"
+                    android:textColorHint="#AAAAAA"
+                    android:textColor="#1B1B1B"
+                    android:textSize="14sp"
+                    android:singleLine="true"
+                    android:inputType="textPersonName"/>
+
+            </LinearLayout>
+
+            <!-- Email -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Email"
+                android:textColor="#1B4332"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="6dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@drawable/bg_input_field"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:layout_marginBottom="16dp">
+
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:src="@android:drawable/ic_dialog_email"
+                    android:tint="#2D6A4F"
+                    android:layout_marginEnd="10dp"/>
+
+                <EditText
+                    android:id="@+id/etEmail"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@null"
+                    android:hint="nama@email.com"
+                    android:textColorHint="#AAAAAA"
+                    android:textColor="#1B1B1B"
+                    android:textSize="14sp"
+                    android:singleLine="true"
+                    android:inputType="textEmailAddress"/>
+
+            </LinearLayout>
+
+            <!-- Usia & Berat berdampingan -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textPassword"/>
-        </com.google.android.material.textfield.TextInputLayout>
+                android:orientation="horizontal"
+                android:layout_marginBottom="16dp">
 
-        <!-- Usia -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Usia"
-            android:layout_marginBottom="12dp">
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etAge"
+                <!-- Usia -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:layout_marginEnd="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Usia"
+                        android:textColor="#1B4332"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="6dp"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:background="@drawable/bg_input_field"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:paddingStart="14dp"
+                        android:paddingEnd="14dp">
+
+                        <ImageView
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:src="@android:drawable/ic_menu_today"
+                            android:tint="#2D6A4F"
+                            android:layout_marginEnd="8dp"/>
+
+                        <EditText
+                            android:id="@+id/etAge"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@null"
+                            android:hint="Tahun"
+                            android:textColorHint="#AAAAAA"
+                            android:textColor="#1B1B1B"
+                            android:textSize="14sp"
+                            android:singleLine="true"
+                            android:inputType="number"/>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <!-- Berat -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:layout_marginStart="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Berat (kg)"
+                        android:textColor="#1B4332"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="6dp"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:background="@drawable/bg_input_field"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:paddingStart="14dp"
+                        android:paddingEnd="14dp">
+
+                        <ImageView
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:src="@android:drawable/ic_lock_idle_lock"
+                            android:tint="#2D6A4F"
+                            android:layout_marginEnd="8dp"/>
+
+                        <EditText
+                            android:id="@+id/etWeight"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@null"
+                            android:hint="kg"
+                            android:textColorHint="#AAAAAA"
+                            android:textColor="#1B1B1B"
+                            android:textSize="14sp"
+                            android:singleLine="true"
+                            android:inputType="numberDecimal"/>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- Tinggi & Kelamin berdampingan -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="number"/>
-        </com.google.android.material.textfield.TextInputLayout>
+                android:orientation="horizontal"
+                android:layout_marginBottom="16dp">
 
-        <!-- Berat Badan -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Berat Badan (kg)"
-            android:layout_marginBottom="12dp">
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etWeight"
-                android:layout_width="match_parent"
+                <!-- Tinggi -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:layout_marginEnd="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Tinggi (cm)"
+                        android:textColor="#1B4332"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="6dp"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:background="@drawable/bg_input_field"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:paddingStart="14dp"
+                        android:paddingEnd="14dp">
+
+                        <ImageView
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:src="@android:drawable/ic_menu_edit"
+                            android:tint="#2D6A4F"
+                            android:layout_marginEnd="8dp"/>
+
+                        <EditText
+                            android:id="@+id/etHeight"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@null"
+                            android:hint="cm"
+                            android:textColorHint="#AAAAAA"
+                            android:textColor="#1B1B1B"
+                            android:textSize="14sp"
+                            android:singleLine="true"
+                            android:inputType="numberDecimal"/>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <!-- Kelamin -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:layout_marginStart="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Kelamin"
+                        android:textColor="#1B4332"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="6dp"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:background="@drawable/bg_spinner"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="4dp">
+
+                        <ImageView
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:src="@android:drawable/ic_menu_compass"
+                            android:tint="#2D6A4F"
+                            android:layout_marginEnd="6dp"/>
+
+                        <Spinner
+                            android:id="@+id/spinnerGender"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@null"
+                            android:entries="@array/gender_options"
+                            android:textSize="14sp"/>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- Password -->
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:inputType="numberDecimal"/>
-        </com.google.android.material.textfield.TextInputLayout>
+                android:text="Password"
+                android:textColor="#1B4332"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="6dp"/>
 
-        <!-- Tinggi Badan -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Tinggi Badan (cm)"
-            android:layout_marginBottom="12dp">
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etHeight"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="numberDecimal"/>
-        </com.google.android.material.textfield.TextInputLayout>
+                android:layout_height="50dp"
+                android:background="@drawable/bg_input_field"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:layout_marginBottom="28dp">
 
-        <!-- Gender Spinner -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Jenis Kelamin"
-            android:layout_marginBottom="4dp"/>
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:src="@android:drawable/ic_lock_idle_lock"
+                    android:tint="#2D6A4F"
+                    android:layout_marginEnd="10dp"/>
 
-        <Spinner
-            android:id="@+id/spinnerGender"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:entries="@array/gender_options"
-            android:layout_marginBottom="24dp"/>
+                <EditText
+                    android:id="@+id/etPassword"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:hint="Min. 8 karakter"
+                    android:textColorHint="#AAAAAA"
+                    android:textColor="#1B1B1B"
+                    android:textSize="14sp"
+                    android:singleLine="true"
+                    android:inputType="textPassword"/>
 
-        <!-- Tombol Daftar -->
-        <Button
-            android:id="@+id/btnDaftar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Daftar"/>
+                <ImageView
+                    android:id="@+id/ivTogglePassword"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@android:drawable/ic_menu_view"
+                    android:tint="#2D6A4F"/>
+
+            </LinearLayout>
+
+            <!-- Tombol Lanjut -->
+            <LinearLayout
+                android:id="@+id/btnDaftar"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:background="@drawable/bg_button_primary"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Lanjut"
+                    android:textColor="#FFFFFF"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:layout_marginEnd="8dp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="→"
+                    android:textColor="#FFFFFF"
+                    android:textSize="18sp"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+
 
     </LinearLayout>
+
 </ScrollView>

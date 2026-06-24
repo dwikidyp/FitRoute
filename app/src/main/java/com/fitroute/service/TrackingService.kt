@@ -16,6 +16,7 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.google.android.gms.maps.model.LatLng
 import com.fitroute.R
+import com.fitroute.util.SensorFusionManager
 
 class TrackingService : Service() {
 
@@ -25,6 +26,11 @@ class TrackingService : Service() {
     // Daftar titik koordinat rute
     private val routePoints = mutableListOf<LatLng>()
 
+    private lateinit var sensorFusion: SensorFusionManager
+    private var currentElevation = 0.0
+    private var totalElevationGain = 0.0
+    private var lastElevation = 0.0
+
     companion object {
         const val CHANNEL_ID = "tracking_channel"
         const val NOTIFICATION_ID = 1
@@ -32,6 +38,8 @@ class TrackingService : Service() {
         // Untuk komunikasi dengan Fragment
         var isRunning = false
         var latestLocation: LatLng? = null
+        var latestElevation = 0.0
+        var totalElevationGain = 0.0
     }
 
     override fun onCreate() {
@@ -42,6 +50,20 @@ class TrackingService : Service() {
 
         // 2. Inisialisasi GPS client
         fusedClient = LocationServices.getFusedLocationProviderClient(this)
+
+        sensorFusion = SensorFusionManager(this)
+        sensorFusion.onElevationUpdated = { elevation ->
+            currentElevation = elevation
+            latestElevation = elevation
+
+            // Hitung total elevasi naik
+            if (lastElevation > 0 && elevation > lastElevation) {
+                totalElevationGain += (elevation - lastElevation)
+                Companion.totalElevationGain = totalElevationGain
+            }
+            lastElevation = elevation
+        }
+        sensorFusion.start()
 
         // 3. Mulai terima update lokasi
         startLocationUpdates()
