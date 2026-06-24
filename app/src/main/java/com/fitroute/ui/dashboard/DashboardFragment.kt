@@ -1,5 +1,6 @@
 package com.fitroute.ui.dashboard
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,9 +12,11 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.fitroute.R
 import com.fitroute.databinding.FragmentDashboardBinding
+import com.fitroute.service.TrackingService
 import com.fitroute.ui.auth.AuthState
 import com.fitroute.ui.auth.AuthViewModel
 import com.fitroute.util.PermissionHelper
+import com.google.android.gms.maps.model.LatLng
 
 class DashboardFragment : Fragment() {
 
@@ -63,5 +66,27 @@ class DashboardFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    // ▶ Mulai tracking
+    private fun startTracking() {
+        val intent = Intent(requireContext(), TrackingService::class.java)
+        requireContext().startForegroundService(intent)
+    }
+
+    // ⏹ Hentikan tracking
+    private fun stopTracking() {
+        val intent = Intent(requireContext(), TrackingService::class.java)
+        requireContext().stopService(intent)
+    }
+
+    // Cek apakah sedang tracking
+    private fun isTracking(): Boolean {
+        return TrackingService.isRunning
+    }
+
+    // Ambil lokasi terbaru
+    private fun getLatestLocation(): LatLng? {
+        return TrackingService.latestLocation
     }
 }

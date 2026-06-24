@@ -32,16 +32,40 @@ class LoginFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Jalur 1: Login email & password
+        // Tombol Masuk
         binding.btnLogin.setOnClickListener {
             val email = binding.etEmail.text.toString()
             val pass = binding.etPassword.text.toString()
+
+            if (email.isBlank() || pass.isBlank()) {
+                Toast.makeText(requireContext(),
+                    "Email dan password tidak boleh kosong",
+                    Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
             viewModel.loginWithEmail(email, pass)
         }
 
-        // Jalur 2: Login fingerprint
+        // Tombol Sidik Jari
         binding.btnBiometric.setOnClickListener {
             showBiometricPrompt()
+        }
+
+        // Link ke Register
+        binding.tvRegister.setOnClickListener {
+            findNavController().navigate(R.id.action_login_to_register)
+        }
+
+        // Toggle show/hide password
+        binding.ivTogglePassword.setOnClickListener {
+            val et = binding.etPassword
+            if (et.inputType == android.text.InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD) {
+                et.inputType = android.text.InputType.TYPE_CLASS_TEXT or
+                        android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD
+            } else {
+                et.inputType = android.text.InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+            }
+            et.setSelection(et.text.length)
         }
 
         // Observasi hasil login

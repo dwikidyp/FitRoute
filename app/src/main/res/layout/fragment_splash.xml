@@ -133,7 +133,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="v1.0.0 · Penelitian UTS"
+            android:text="v1.0.0"
             android:textColor="@color/white_30"
             android:textSize="11sp"/>
 
