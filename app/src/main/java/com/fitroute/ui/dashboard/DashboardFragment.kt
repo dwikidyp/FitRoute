@@ -58,6 +58,31 @@ class DashboardFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.viewProgressFill.post {
+            val parentWidth = (binding.viewProgressFill.parent as View).width
+            val params = binding.viewProgressFill.layoutParams
+            params.width = (parentWidth * 0.68).toInt()
+            binding.viewProgressFill.layoutParams = params
+        }
+
+        // Tombol mulai sesi
+        binding.btnStartSession.setOnClickListener {
+            // TODO: Navigate ke tracking fragment
+            Toast.makeText(requireContext(), "Memulai sesi...", Toast.LENGTH_SHORT).show()
+        }
+
+        // Bottom navigation
+        binding.navHome.setOnClickListener { /* sudah di home */ }
+        binding.navRoute.setOnClickListener {
+            // TODO: navigate ke rute
+        }
+        binding.navHistory.setOnClickListener {
+            // TODO: navigate ke riwayat
+        }
+        binding.navProfile.setOnClickListener {
+            // TODO: navigate ke profil
+        }
+
 
         if (!PermissionHelper.hasFineLocationPermission(requireActivity())) {
             locationLauncher.launch(
@@ -68,17 +93,9 @@ class DashboardFragment : Fragment() {
             )
         }
 
-        // Tombol logout
-        binding.btnLogout.setOnClickListener {
-            viewModel.logout()
-        }
 
-        // Observasi state logout
-        viewModel.authState.observe(viewLifecycleOwner) { state ->
-            if (state is AuthState.LoggedOut) {
-                findNavController().navigate(R.id.action_dashboard_to_login)
-            }
-        }
+
+        
     }
 
     override fun onDestroyView() {

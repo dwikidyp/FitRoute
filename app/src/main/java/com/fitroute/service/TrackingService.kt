@@ -16,12 +16,15 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.google.android.gms.maps.model.LatLng
 import com.fitroute.R
+import com.fitroute.util.ActivityDetector
+import com.fitroute.util.ActivityType
 import com.fitroute.util.SensorFusionManager
 
 class TrackingService : Service() {
 
     // Client GPS dari Google Play Services
     private lateinit var fusedClient: FusedLocationProviderClient
+    private lateinit var activityDetector: ActivityDetector
 
     // Daftar titik koordinat rute
     private val routePoints = mutableListOf<LatLng>()
@@ -40,15 +43,16 @@ class TrackingService : Service() {
         var latestLocation: LatLng? = null
         var latestElevation = 0.0
         var totalElevationGain = 0.0
+        var currentActivity = ActivityType.UNKNOWN
     }
 
     override fun onCreate() {
         super.onCreate()
 
-        // 1. Tampilkan notifikasi agar service tidak dibunuh Android
+        // Tampilkan notifikasi agar service tidak dibunuh Android
         startForeground(NOTIFICATION_ID, buildTrackingNotification())
 
-        // 2. Inisialisasi GPS client
+        // Inisialisasi GPS client
         fusedClient = LocationServices.getFusedLocationProviderClient(this)
 
         sensorFusion = SensorFusionManager(this)
@@ -65,7 +69,14 @@ class TrackingService : Service() {
         }
         sensorFusion.start()
 
-        // 3. Mulai terima update lokasi
+        // Activity detector
+        activityDetector = ActivityDetector(this)
+        activityDetector.onActivityDetected = { type ->
+            currentActivity = type
+        }
+        activityDetector.start()
+
+        // Mulai terima update lokasi
         startLocationUpdates()
 
         isRunning = true
@@ -75,9 +86,9 @@ class TrackingService : Service() {
         // Request lokasi setiap 2 detik, akurasi tinggi
         val request = LocationRequest.Builder(
             Priority.PRIORITY_HIGH_ACCURACY,
-            2000L // interval 2 detik
+            2000L
         )
-            .setMinUpdateDistanceMeters(3f) // update jika bergerak minimal 3 meter
+            .setMinUpdateDistanceMeters(3f)
             .build()
 
         try {
@@ -112,7 +123,7 @@ class TrackingService : Service() {
         val channel = NotificationChannel(
             CHANNEL_ID,
             "FitRoute Tracking",
-            NotificationManager.IMPORTANCE_LOW // LOW = tidak ada suara
+            NotificationManager.IMPORTANCE_LOW
         )
         val manager = getSystemService(NotificationManager::class.java)
         manager.createNotificationChannel(channel)
@@ -121,7 +132,7 @@ class TrackingService : Service() {
             .setContentTitle("FitRoute aktif")
             .setContentText("Sedang merekam rute kamu...")
             .setSmallIcon(R.drawable.ic_logo)
-            .setOngoing(true) // tidak bisa diswipe
+            .setOngoing(true)
             .build()
     }
 
@@ -132,6 +143,8 @@ class TrackingService : Service() {
         super.onDestroy()
         // Hentikan update lokasi saat service dihentikan
         fusedClient.removeLocationUpdates(locationCallback)
+        sensorFusion.stop()
+        activityDetector.stop()
         isRunning = false
     }
 
