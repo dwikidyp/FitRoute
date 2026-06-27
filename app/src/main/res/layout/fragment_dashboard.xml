@@ -414,16 +414,19 @@
                 <LinearLayout
                     android:id="@+id/btnStartSession"
                     android:layout_width="match_parent"
-                    android:layout_height="70dp"
+                    android:layout_height="wrap_content"
                     android:background="@drawable/bg_card_green_dark"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:padding="20dp">
+                    android:paddingStart="20dp"
+                    android:paddingEnd="20dp"
+                    android:paddingTop="16dp"
+                    android:paddingBottom="16dp">
 
                     <!-- Tombol play bulat -->
                     <FrameLayout
-                        android:layout_width="44dp"
-                        android:layout_height="44dp"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
                         android:background="@drawable/bg_start_button"
                         android:layout_marginEnd="16dp">
 
@@ -450,7 +453,8 @@
                             android:text="Mulai sesi latihan"
                             android:textColor="#FFFFFF"
                             android:textSize="16sp"
-                            android:textStyle="bold"/>
+                            android:textStyle="bold"
+                            android:layout_marginBottom="4dp"/>
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -461,12 +465,14 @@
 
                     </LinearLayout>
 
+                    <!-- Panah kanan -->
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="→"
                         android:textColor="#52B788"
-                        android:textSize="22sp"/>
+                        android:textSize="24sp"
+                        android:layout_marginStart="8dp"/>
 
                 </LinearLayout>
 
