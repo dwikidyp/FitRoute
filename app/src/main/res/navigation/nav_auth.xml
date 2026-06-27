@@ -50,6 +50,21 @@
             app:destination="@id/loginFragment"
             app:popUpTo="@id/splashFragment"
             app:popUpToInclusive="true"/>
+        <action
+            android:id="@+id/action_dashboard_to_activityPicker"
+            app:destination="@id/activityPickerFragment"/>
     </fragment>
+
+    <fragment
+        android:id="@+id/activityPickerFragment"
+        android:name="com.fitroute.ui.tracking.ActivityPickerFragment">
+        <action
+            android:id="@+id/action_activityPicker_to_tracking"
+            app:destination="@id/trackingFragment"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/trackingFragment"
+        android:name="com.fitroute.ui.tracking.TrackingFragment"/>
 
 </navigation>

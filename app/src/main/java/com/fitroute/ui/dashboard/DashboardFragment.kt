@@ -67,12 +67,12 @@ class DashboardFragment : Fragment() {
 
         // Tombol mulai sesi
         binding.btnStartSession.setOnClickListener {
-            // TODO: Navigate ke tracking fragment
+            findNavController().navigate(R.id.action_dashboard_to_activityPicker)
             Toast.makeText(requireContext(), "Memulai sesi...", Toast.LENGTH_SHORT).show()
         }
 
         // Bottom navigation
-        binding.navHome.setOnClickListener { /* sudah di home */ }
+        binding.navHome.setOnClickListener {  }
         binding.navRoute.setOnClickListener {
             // TODO: navigate ke rute
         }

@@ -4,5 +4,6 @@ enum class ActivityType {
     WALKING,
     RUNNING,
     CYCLING,
+    HIKING,
     UNKNOWN
 }

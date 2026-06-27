@@ -5,6 +5,7 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.Service
 import android.content.Intent
+import android.location.Location
 import android.os.IBinder
 import android.os.Looper
 import androidx.core.app.NotificationCompat
@@ -16,6 +17,8 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.google.android.gms.maps.model.LatLng
 import com.fitroute.R
+import com.fitroute.domain.usecase.CalorieCalculationUseCase
+import com.fitroute.domain.usecase.MetValue
 import com.fitroute.util.ActivityDetector
 import com.fitroute.util.ActivityType
 import com.fitroute.util.SensorFusionManager
@@ -33,6 +36,11 @@ class TrackingService : Service() {
     private var currentElevation = 0.0
     private var totalElevationGain = 0.0
     private var lastElevation = 0.0
+    private val calorieUseCase = CalorieCalculationUseCase()
+    private var weightKg = 70.0
+    private var startTimeMs = 0L
+    private var totalDistanceKm = 0.0
+    private var lastLocation: Location? = null
 
     companion object {
         const val CHANNEL_ID = "tracking_channel"
@@ -44,6 +52,9 @@ class TrackingService : Service() {
         var latestElevation = 0.0
         var totalElevationGain = 0.0
         var currentActivity = ActivityType.UNKNOWN
+        var totalCalories = 0.0
+        var totalDistanceKm = 0.0
+        var durationSeconds = 0L
     }
 
     override fun onCreate() {
@@ -51,6 +62,7 @@ class TrackingService : Service() {
 
         // Tampilkan notifikasi agar service tidak dibunuh Android
         startForeground(NOTIFICATION_ID, buildTrackingNotification())
+        startTimeMs = System.currentTimeMillis()
 
         // Inisialisasi GPS client
         fusedClient = LocationServices.getFusedLocationProviderClient(this)
@@ -113,6 +125,38 @@ class TrackingService : Service() {
 
                 // Simpan lokasi terbaru untuk diakses Fragment
                 latestLocation = point
+
+                // Hitung jarak antar titik
+                lastLocation?.let { prev ->
+                    val distance = FloatArray(1)
+                    Location.distanceBetween(
+                        prev.latitude, prev.longitude,
+                        loc.latitude, loc.longitude,
+                        distance
+                    )
+                    totalDistanceKm += distance[0] / 1000.0
+                    Companion.totalDistanceKm = totalDistanceKm
+                }
+                lastLocation = loc
+
+                // Hitung durasi
+                val durationHours = (System.currentTimeMillis() - startTimeMs) /
+                        1000.0 / 3600.0
+                durationSeconds = ((System.currentTimeMillis() - startTimeMs) / 1000)
+
+                // Hitung kecepatan (km/jam)
+                val speedKmh = if (durationHours > 0)
+                    totalDistanceKm / durationHours else 0.0
+
+                // Hitung kalori dengan use case
+                val baseMet = MetValue.getBaseMet(currentActivity.name)
+                totalCalories = calorieUseCase.calculate(
+                    baseMet        = baseMet,
+                    speedKmh       = speedKmh,
+                    elevationGainM = totalElevationGain,
+                    weightKg       = weightKg,
+                    durationHours  = durationHours
+                )
             }
         }
     }
