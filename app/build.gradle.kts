@@ -28,8 +28,17 @@ android {
         val supabaseUrl = localProps.getProperty("SUPABASE_URL")?.replace("\"", "") ?: ""
         val supabaseAnonKey = localProps.getProperty("SUPABASE_ANON_KEY")?.replace("\"", "") ?: ""
 
+        buildConfigField(
+            "String", "MAPS_API_KEY",
+            "\"${localProps["MAPS_API_KEY"]}\""
+        )
         buildConfigField("String", "SUPABASE_URL", "\"$supabaseUrl\"")
         buildConfigField("String", "SUPABASE_ANON_KEY", "\"$supabaseAnonKey\"")
+
+        manifestPlaceholders["MAPS_API_KEY"] =
+            localProps["MAPS_API_KEY"] ?: ""
+
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
