@@ -1,17 +1,374 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:gravity="center"
     android:background="#F0FAF4">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Tracking sedang dibuat..."
-        android:textColor="#2D6A4F"
-        android:textSize="18sp"
-        android:textStyle="bold"/>
+    <!-- ===== PETA ===== -->
+    <FrameLayout
+        android:id="@+id/mapContainer"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@drawable/bg_map_card"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/statsContainer"
+        app:layout_constraintHeight_percent="0.55">
 
-</LinearLayout>
+        <!-- Google Map -->
+        <fragment
+            android:id="@+id/map"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+        <!-- Status GPS -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|start"
+            android:layout_margin="12dp"
+            android:background="@drawable/bg_status_bar"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp"
+            android:elevation="4dp">
+
+            <View
+                android:layout_width="8dp"
+                android:layout_height="8dp"
+                android:background="@drawable/bg_activity_icon_selected"
+                android:layout_marginEnd="6dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="GPS aktif"
+                android:textColor="#1B4332"
+                android:textSize="12sp"
+                android:textStyle="bold"/>
+
+        </LinearLayout>
+
+        <!-- Tombol Zoom -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|end"
+            android:layout_margin="12dp"
+            android:orientation="vertical"
+            android:elevation="4dp">
+
+            <TextView
+                android:id="@+id/btnZoomIn"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:background="@drawable/bg_zoom_button"
+                android:text="+"
+                android:gravity="center"
+                android:textColor="#1B4332"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:elevation="2dp"
+                android:layout_marginBottom="4dp"/>
+
+            <TextView
+                android:id="@+id/btnZoomOut"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:background="@drawable/bg_zoom_button"
+                android:text="−"
+                android:gravity="center"
+                android:textColor="#1B4332"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:elevation="2dp"/>
+
+        </LinearLayout>
+
+    </FrameLayout>
+
+    <!-- ===== PANEL STATS ===== -->
+    <LinearLayout
+        android:id="@+id/statsContainer"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        android:background="#F0FAF4"
+        android:padding="16dp"
+        app:layout_constraintTop_toBottomOf="@id/mapContainer"
+        app:layout_constraintBottom_toTopOf="@id/controlBar">
+
+        <!-- Status sesi + timer -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="12dp">
+
+            <!-- Dot merah -->
+            <View
+                android:layout_width="10dp"
+                android:layout_height="10dp"
+                android:background="@drawable/bg_stop_button"
+                android:layout_marginEnd="8dp"/>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Sesi berlangsung"
+                android:textColor="#1B4332"
+                android:textSize="14sp"
+                android:textStyle="bold"/>
+
+            <!-- Timer besar -->
+            <TextView
+                android:id="@+id/tvDuration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="00:00"
+                android:textColor="#1B4332"
+                android:textSize="28sp"
+                android:textStyle="bold"
+                android:fontFamily="monospace"/>
+
+        </LinearLayout>
+
+        <!-- Stats baris 1: Jarak, Pace, Kalori -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="12dp">
+
+            <!-- Jarak -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <TextView
+                    android:id="@+id/tvDistance"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0.0"
+                    android:textColor="#1B4332"
+                    android:textSize="26sp"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="km\njarak"
+                    android:textColor="#888888"
+                    android:textSize="11sp"
+                    android:gravity="center"/>
+
+            </LinearLayout>
+
+            <!-- Divider -->
+            <View android:layout_width="1dp" android:layout_height="48dp"
+                android:background="#E0E0E0"/>
+
+            <!-- Pace -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <TextView
+                    android:id="@+id/tvPace"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0:00"
+                    android:textColor="#1B4332"
+                    android:textSize="26sp"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="min/km\npace"
+                    android:textColor="#888888"
+                    android:textSize="11sp"
+                    android:gravity="center"/>
+
+            </LinearLayout>
+
+            <!-- Divider -->
+            <View android:layout_width="1dp" android:layout_height="48dp"
+                android:background="#E0E0E0"/>
+
+            <!-- Kalori -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <TextView
+                    android:id="@+id/tvCalories"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0"
+                    android:textColor="#1B4332"
+                    android:textSize="26sp"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="kcal\nkalori"
+                    android:textColor="#888888"
+                    android:textSize="11sp"
+                    android:gravity="center"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- Stats baris 2: Elevasi & Kecepatan -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <!-- Elevasi -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <TextView
+                    android:id="@+id/tvElevation"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="+0"
+                    android:textColor="#1B4332"
+                    android:textSize="26sp"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="m\nelevasi naik"
+                    android:textColor="#888888"
+                    android:textSize="11sp"
+                    android:gravity="center"/>
+
+            </LinearLayout>
+
+            <!-- Divider -->
+            <View android:layout_width="1dp" android:layout_height="48dp"
+                android:background="#E0E0E0"/>
+
+            <!-- Kecepatan -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <TextView
+                    android:id="@+id/tvSpeed"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0.0"
+                    android:textColor="#1B4332"
+                    android:textSize="26sp"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="km/h\nkecepatan"
+                    android:textColor="#888888"
+                    android:textSize="11sp"
+                    android:gravity="center"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!-- ===== KONTROL BAWAH ===== -->
+    <LinearLayout
+        android:id="@+id/controlBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:paddingTop="12dp"
+        android:paddingBottom="24dp"
+        android:background="#FFFFFF"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <!-- Tombol Galeri/Foto -->
+        <FrameLayout
+            android:id="@+id/btnGallery"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:background="@drawable/bg_control_button"
+            android:layout_marginEnd="28dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="🖼"
+                android:textSize="22sp"/>
+
+        </FrameLayout>
+
+        <!-- Tombol Stop -->
+        <FrameLayout
+            android:id="@+id/btnStop"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:background="@drawable/bg_stop_button"
+            android:layout_marginEnd="28dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="⏹"
+                android:textSize="28sp"/>
+
+        </FrameLayout>
+
+        <!-- Tombol Pause -->
+        <FrameLayout
+            android:id="@+id/btnPause"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:background="@drawable/bg_control_button">
+
+            <TextView
+                android:id="@+id/tvPauseIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="⏸"
+                android:textSize="22sp"/>
+
+        </FrameLayout>
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

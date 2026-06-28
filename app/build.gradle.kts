@@ -84,4 +84,5 @@ dependencies {
     implementation("androidx.navigation:navigation-ui-ktx:2.9.8")
     implementation(libs.play.services.location)
     implementation(libs.play.services.maps)
+    implementation("com.google.android.gms:play-services-maps:19.0.0")
 }
