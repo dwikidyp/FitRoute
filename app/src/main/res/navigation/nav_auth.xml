@@ -6,7 +6,7 @@
 
     <fragment
         android:id="@+id/splashFragment"
-        android:name="com.fitroute.ui.auth.SplashFragment"> <!-- ← pastikan package benar -->
+        android:name="com.fitroute.ui.auth.SplashFragment">
         <action
             android:id="@+id/action_splash_to_login"
             app:destination="@id/loginFragment"/>
@@ -66,5 +66,9 @@
     <fragment
         android:id="@+id/trackingFragment"
         android:name="com.fitroute.ui.tracking.TrackingFragment"/>
+
+    <fragment
+        android:id="@+id/elevationProfileFragment"
+        android:name="com.fitroute.ui.tracking.ElevationProfileFragment"/>
 
 </navigation>
