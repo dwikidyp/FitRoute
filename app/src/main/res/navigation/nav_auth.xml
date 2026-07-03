@@ -71,4 +71,17 @@
         android:id="@+id/elevationProfileFragment"
         android:name="com.fitroute.ui.tracking.ElevationProfileFragment"/>
 
+    <fragment
+        android:id="@+id/summaryFragment"
+        android:name="com.fitroute.ui.tracking.SummaryFragment">
+        <argument
+            android:name="session_id"
+            app:argType="string"/>
+        <action
+            android:id="@+id/action_summary_to_dashboard"
+            app:destination="@id/dashboardFragment"
+            app:popUpTo="@id/dashboardFragment"
+            app:popUpToInclusive="true"/>
+    </fragment>
+
 </navigation>
