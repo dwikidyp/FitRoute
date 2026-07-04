@@ -4,18 +4,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
+import android.widget.LinearLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.fitroute.R
 import com.fitroute.databinding.FragmentSummaryBinding
-import com.fitroute.databinding.ItemElevationSegmentBinding
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 class SummaryFragment : Fragment() {
 
@@ -55,14 +51,18 @@ class SummaryFragment : Fragment() {
                         "HIKING"  -> "🥾 Hiking"
                         else      -> session.activityType
                     }
-                    binding.tvActivityType.text = activityLabel
+                    binding.tvActivityTag.text = activityLabel
 
                     // Waktu mulai
-                    val dateFormat = SimpleDateFormat(
-                        "EEEE, dd MMM yyyy · HH:mm",
-                        Locale("id")
-                    )
-                    binding.tvDateTime.text = dateFormat.format(Date(session.startedAt))
+                    val fmt = java.text.SimpleDateFormat(
+                        "EEEE, dd MMM yyyy", java.util.Locale("id"))
+                    val prefix = when (session.activityType) {
+                        "RUNNING" -> "Lari pagi"
+                        "CYCLING" -> "Bersepeda"
+                        else      -> "Hiking"
+                    }
+                    binding.tvDateTime.text =
+                        "$prefix · ${fmt.format(java.util.Date(session.startedAt))}"
 
                     // Stats utama
                     binding.tvDistance.text = "%.1f".format(session.distanceKm)
@@ -78,19 +78,22 @@ class SummaryFragment : Fragment() {
                         "%d:%02d".format(menit, detik)
 
                     // Stats tambahan
-                    val paceMin = session.avgPace.toInt()
-                    val paceSec = ((session.avgPace - paceMin) * 60).toInt()
-                    binding.tvPace.text    = "%d:%02d".format(paceMin, paceSec)
+                    val pMin = session.avgPace.toInt()
+                    val pSec = ((session.avgPace - pMin) * 60).toInt()
+                    binding.tvPace.text    = "%d:%02d".format(pMin, pSec)
                     binding.tvElevGain.text = "+%.0fm".format(session.elevGainM)
-                    binding.tvSpeed.text   = "%.1f".format(session.avgSpeedKmh)
 
                     // Badge Personal Record
                     if (state.isPersonalRecord) {
-                        binding.tvPersonalRecord.visibility = View.VISIBLE
+                        binding.tagPR.visibility = View.VISIBLE
                     }
 
+                    // Grafik elevasi dummy
+                    val elevData = listOf(100f,120f,140f,160f,180f,175f,170f,168f)
+                    binding.elevationChart.setData(elevData, elevData.map { it - 5f })
+
                     // Pace per km
-                    addPacePerKm(state.pacePerKm)
+                    addPaceBarChart(state.pacePerKm)
                 }
             }
         }
@@ -111,27 +114,53 @@ class SummaryFragment : Fragment() {
         }
     }
 
-    private fun addPacePerKm(paces: List<Double>) {
-        val maxPace = paces.maxOrNull() ?: 1.0
-        paces.forEachIndexed { index, pace ->
-            val itemBinding = ItemElevationSegmentBinding.inflate(
-                layoutInflater, binding.paceContainer, false
-            )
-            itemBinding.tvSegmentLabel.text = "km ${index + 1}"
-            val paceMin = pace.toInt()
-            val paceSec = ((pace - paceMin) * 60).toInt()
-            itemBinding.tvSegmentValue.text = "%d:%02d".format(paceMin, paceSec)
+    private fun addPaceBarChart(paces: List<Double>) {
+        binding.paceChartContainer.removeAllViews()
+        if (paces.isEmpty()) return
 
-            itemBinding.root.post {
-                val parentWidth = (itemBinding.viewSegmentBar.parent as View).width
-                val params = itemBinding.viewSegmentBar.layoutParams
-                params.width = (parentWidth * (pace / maxPace)).toInt()
-                itemBinding.viewSegmentBar.layoutParams = params
+        val maxPace = paces.maxOrNull() ?: 1.0
+
+        paces.forEachIndexed { index, pace ->
+            val col = LinearLayout(requireContext()).apply {
+                orientation = android.widget.LinearLayout.VERTICAL
+                gravity = android.view.Gravity.BOTTOM or android.view.Gravity.CENTER_HORIZONTAL
+                layoutParams = LinearLayout.LayoutParams(
+                    0, android.view.ViewGroup.LayoutParams.MATCH_PARENT, 1f
+                )
             }
 
-            binding.paceContainer.addView(itemBinding.root)
+            // Bar
+            val bar = android.view.View(requireContext()).apply {
+                background = if (index == paces.size / 2)
+                    requireContext().getDrawable(R.drawable.bg_pace_bar_dark)
+                else
+                    requireContext().getDrawable(R.drawable.bg_pace_bar_light)
+
+                layoutParams = LinearLayout.LayoutParams(
+                    16.dpToPx(), (80 * pace / maxPace).toInt().dpToPx()
+                )
+            }
+
+            // Label km
+            val label = android.widget.TextView(requireContext()).apply {
+                text = "${index + 1}"
+                textSize = 9f
+                setTextColor(android.graphics.Color.parseColor("#888888"))
+                gravity = android.view.Gravity.CENTER
+                layoutParams = LinearLayout.LayoutParams(
+                    android.view.ViewGroup.LayoutParams.MATCH_PARENT,
+                    android.view.ViewGroup.LayoutParams.WRAP_CONTENT
+                ).apply { topMargin = 4.dpToPx() }
+            }
+
+            col.addView(bar)
+            col.addView(label)
+            binding.paceChartContainer.addView(col)
         }
     }
+
+    private fun Int.dpToPx(): Int =
+        (this * resources.displayMetrics.density).toInt()
 
     private fun shareSession() {
         val state = viewModel.uiState.value

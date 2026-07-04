@@ -1,7 +1,6 @@
 package com.fitroute.ui.auth
 
 import android.os.Bundle
-import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
