@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F0FAF4">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <!-- ===== HEADER ===== -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_dashboard_header"
+            android:orientation="vertical"
+            android:padding="24dp"
+            android:paddingBottom="28dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Riwayat"
+                android:textColor="#FFFFFF"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="4dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Semua sesi latihanmu"
+                android:textColor="#99FFFFFF"
+                android:textSize="13sp"/>
+
+        </LinearLayout>
+
+        <!-- ===== FILTER CHIPS ===== -->
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="none"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingTop="14dp"
+            android:paddingBottom="10dp">
+
+            <LinearLayout
+                android:id="@+id/filterContainer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+
+            </LinearLayout>
+
+        </HorizontalScrollView>
+
+        <!-- ===== LIST RIWAYAT ===== -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerHistory"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="80dp"
+            android:clipToPadding="false"/>
+
+    </LinearLayout>
+
+    <!-- ===== BOTTOM NAVIGATION ===== -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:layout_gravity="bottom"
+        android:background="@drawable/bg_bottom_nav"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:elevation="8dp">
+
+        <LinearLayout android:layout_width="0dp" android:layout_height="match_parent"
+            android:layout_weight="1" android:orientation="vertical" android:gravity="center">
+            <ImageView android:layout_width="24dp" android:layout_height="24dp"
+                android:src="@android:drawable/ic_menu_compass" android:tint="#AAAAAA"/>
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="Home" android:textColor="#AAAAAA" android:textSize="10sp"/>
+        </LinearLayout>
+
+        <LinearLayout android:layout_width="0dp" android:layout_height="match_parent"
+            android:layout_weight="1" android:orientation="vertical" android:gravity="center">
+            <ImageView android:layout_width="24dp" android:layout_height="24dp"
+                android:src="@android:drawable/ic_menu_mapmode" android:tint="#AAAAAA"/>
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="Rute" android:textColor="#AAAAAA" android:textSize="10sp"/>
+        </LinearLayout>
+
+        <LinearLayout android:layout_width="0dp" android:layout_height="match_parent"
+            android:layout_weight="1" android:orientation="vertical" android:gravity="center">
+            <ImageView android:layout_width="24dp" android:layout_height="24dp"
+                android:src="@android:drawable/ic_menu_recent_history" android:tint="#2D6A4F"/>
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="Riwayat" android:textColor="#2D6A4F" android:textSize="10sp"
+                android:textStyle="bold"/>
+        </LinearLayout>
+
+        <LinearLayout android:layout_width="0dp" android:layout_height="match_parent"
+            android:layout_weight="1" android:orientation="vertical" android:gravity="center">
+            <ImageView android:layout_width="24dp" android:layout_height="24dp"
+                android:src="@android:drawable/ic_menu_my_calendar" android:tint="#AAAAAA"/>
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="Profil" android:textColor="#AAAAAA" android:textSize="10sp"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
