@@ -17,48 +17,75 @@
             android:background="@drawable/bg_dashboard_header"
             android:orientation="vertical"
             android:padding="24dp"
-            android:paddingBottom="28dp">
+            android:paddingBottom="20dp">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Riwayat"
-                android:textColor="#FFFFFF"
-                android:textSize="22sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="4dp"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Semua sesi latihanmu"
-                android:textColor="#99FFFFFF"
-                android:textSize="13sp"/>
-
-        </LinearLayout>
-
-        <!-- ===== FILTER CHIPS ===== -->
-        <HorizontalScrollView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:scrollbars="none"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:paddingTop="14dp"
-            android:paddingBottom="10dp">
-
+            <!-- Judul + icon search -->
             <LinearLayout
-                android:id="@+id/filterContainer"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="16dp">
 
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Riwayat"
+                        android:textColor="#FFFFFF"
+                        android:textSize="22sp"
+                        android:textStyle="bold"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="latihan"
+                        android:textColor="#FFFFFF"
+                        android:textSize="22sp"
+                        android:textStyle="bold"/>
+
+                </LinearLayout>
+
+                <!-- Tombol search -->
+                <FrameLayout
+                    android:id="@+id/btnSearch"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="@drawable/bg_sensor_badge">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="🔍"
+                        android:textSize="16sp"/>
+
+                </FrameLayout>
 
             </LinearLayout>
 
-        </HorizontalScrollView>
+            <!-- Filter Chips -->
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="none">
 
-        <!-- ===== LIST RIWAYAT ===== -->
+                <LinearLayout
+                    android:id="@+id/filterContainer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"/>
+
+            </HorizontalScrollView>
+
+        </LinearLayout>
+
+        <!-- ===== RECYCLER VIEW ===== -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerHistory"
             android:layout_width="match_parent"

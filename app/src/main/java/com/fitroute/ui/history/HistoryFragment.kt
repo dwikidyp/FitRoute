@@ -42,7 +42,6 @@ class HistoryFragment : Fragment() {
     private fun setupRecyclerView() {
         adapter = HistoryAdapter { sessionId ->
             // TODO: navigate ke detail sesi
-            // findNavController().navigate(...)
         }
         binding.recyclerHistory.apply {
             layoutManager = LinearLayoutManager(requireContext())
@@ -55,17 +54,16 @@ class HistoryFragment : Fragment() {
             val chip = TextView(requireContext()).apply {
                 text = filter.label
                 textSize = 13f
-                setPadding(32, 16, 32, 16)
+                setPadding(28.dpToPx(), 10.dpToPx(), 28.dpToPx(), 10.dpToPx())
 
-                // Style chip
+                val isActive = filter == activeFilter
                 setBackgroundResource(
-                    if (filter == activeFilter) R.drawable.bg_activity_card_selected
-                    else R.drawable.bg_activity_card
+                    if (isActive) R.drawable.bg_filter_chip_active
+                    else R.drawable.bg_filter_chip_inactive
                 )
                 setTextColor(
-                    if (filter == activeFilter)
-                        Color.parseColor("#1B4332")
-                    else Color.parseColor("#888888")
+                    if (isActive) Color.WHITE
+                    else Color.parseColor("#1B4332")
                 )
 
                 val params = ViewGroup.MarginLayoutParams(
@@ -85,18 +83,16 @@ class HistoryFragment : Fragment() {
     }
 
     private fun refreshFilterChips() {
-        val filters = ActivityFilter.values()
-        filters.forEachIndexed { index, filter ->
+        ActivityFilter.values().forEachIndexed { index, filter ->
             val chip = binding.filterContainer.getChildAt(index) as? TextView ?: return
             val isActive = filter == activeFilter
-
             chip.setBackgroundResource(
-                if (isActive) R.drawable.bg_activity_card_selected
-                else R.drawable.bg_activity_card
+                if (isActive) R.drawable.bg_filter_chip_active
+                else R.drawable.bg_filter_chip_inactive
             )
             chip.setTextColor(
-                if (isActive) Color.parseColor("#1B4332")
-                else Color.parseColor("#888888")
+                if (isActive) Color.WHITE
+                else Color.parseColor("#1B4332")
             )
         }
     }
@@ -104,9 +100,28 @@ class HistoryFragment : Fragment() {
     private fun observeHistory() {
         lifecycleScope.launch {
             viewModel.historyList.collect { sessions ->
-                adapter.submitList(sessions)
+                // Kelompokkan per minggu dengan header
+                val listWithHeaders = buildListWithHeaders(sessions)
+                adapter.submitList(listWithHeaders)
             }
         }
+    }
+
+    private fun buildListWithHeaders(
+        sessions: List<SessionUiModel>
+    ): List<HistoryListItem> {
+        val result = mutableListOf<HistoryListItem>()
+        var lastWeek = ""
+
+        sessions.forEach { session ->
+            if (session.weekLabel != lastWeek) {
+                result.add(HistoryListItem.Header(session.weekLabel))
+                lastWeek = session.weekLabel
+            }
+            result.add(HistoryListItem.Session(session))
+        }
+
+        return result
     }
 
     private fun Int.dpToPx(): Int =

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/tvWeekLabel"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:text="Minggu ini"
+    android:textColor="#1B4332"
+    android:textSize="13sp"
+    android:textStyle="bold"
+    android:paddingTop="16dp"
+    android:paddingBottom="8dp"/>
