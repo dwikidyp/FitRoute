@@ -34,4 +34,9 @@ class SessionRepository(
     suspend fun clearUserData(userId: String) {
         sessionDao.deleteAllByUser(userId)
     }
+
+    // Hapus satu sesi berdasarkan ID
+    suspend fun deleteSession(sessionId: String) {
+        sessionDao.delete(sessionId)
+    }
 }
