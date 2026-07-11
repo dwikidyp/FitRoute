@@ -99,4 +99,8 @@
             app:destination="@id/detailSessionFragment"/>
     </fragment>
 
+    <fragment
+        android:id="@+id/analyticsFragment"
+        android:name="com.fitroute.ui.analytics.AnalyticsFragment"/>
+
 </navigation>
