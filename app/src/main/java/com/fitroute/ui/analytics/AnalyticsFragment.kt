@@ -7,17 +7,21 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import com.fitroute.R
 import com.fitroute.databinding.FragmentAnalyticsBinding
+import kotlinx.coroutines.launch
 
 class AnalyticsFragment : Fragment() {
 
     private var _binding: FragmentAnalyticsBinding? = null
     private val binding get() = _binding!!
+    private val viewModel: AnalyticsViewModel by viewModels()
 
-    // Data dummy
-    private val weeklyData = listOf(5.4f, 0f, 7.8f, 6.2f, 0f, 12.1f, 2.7f)
-    private val monthlyData = listOf(22f, 18f, 34f, 28f, 15f, 40f, 32f)
+    // Data chart per hari
+    private val weeklyChart = listOf(5.4f, 0f, 7.8f, 6.2f, 0f, 12.1f, 2.7f)
+    private val monthlyChart = listOf(22f, 18f, 34f, 28f, 15f, 40f, 32f)
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -31,51 +35,65 @@ class AnalyticsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Set data awal
-        loadWeeklyData()
+        // Muat data awal
+        viewModel.loadWeeklyData()
+
+        // Observe data dari ViewModel
+        lifecycleScope.launch {
+            viewModel.uiState.collect { state ->
+                if (state.isLoading) return@collect
+
+                val agg = state.aggregate
+                val pr  = state.personalRecords
+
+                // Stats ringkasan
+                binding.tvTotalKm.text =
+                    "%.1f".format(agg.totalDistance)
+                binding.tvTotalKcal.text =
+                    "%,.0f".format(agg.totalCalories)
+                        .replace(",", ".")
+                binding.tvTotalSessions.text =
+                    agg.sessionCount.toString()
+
+                // Personal records
+                binding.tvPRDistance.text =
+                    "%.1f km · ${pr.longestDistanceActivity}"
+                        .format(pr.longestDistanceKm)
+                binding.tvPRCalories.text =
+                    "%,.0f kcal · ${pr.highestCaloriesActivity}"
+                        .format(pr.highestCalories)
+                        .replace(",", ".")
+                binding.tvBestElevation.text =
+                    "+%.0f m · ${pr.highestElevationActivity}"
+                        .format(pr.highestElevationM)
+
+                val paceMin = pr.bestPaceMinKm.toInt()
+                val paceSec = ((pr.bestPaceMinKm - paceMin) * 60).toInt()
+                binding.tvBestPace.text =
+                    "%d:%02d min/km · ${pr.bestPaceActivity}"
+                        .format(paceMin, paceSec)
+            }
+        }
+
+        // Chart mingguan
+        binding.distanceChart.setData(weeklyChart, activeDay = 2)
 
         // Period selector
         binding.chipWeek.setOnClickListener {
             setActivePeriod(binding.chipWeek)
-            loadWeeklyData()
+            viewModel.loadWeeklyData()
+            binding.distanceChart.setData(weeklyChart, activeDay = 2)
         }
         binding.chipMonth.setOnClickListener {
             setActivePeriod(binding.chipMonth)
-            loadMonthlyData()
+            viewModel.loadMonthlyData()
+            binding.distanceChart.setData(monthlyChart, activeDay = 3)
         }
         binding.chipYear.setOnClickListener {
             setActivePeriod(binding.chipYear)
-            loadMonthlyData()
+            viewModel.loadMonthlyData()
+            binding.distanceChart.setData(monthlyChart, activeDay = 5)
         }
-    }
-
-    private fun loadWeeklyData() {
-        // Stats ringkasan
-        binding.tvTotalKm.text       = "34.2"
-        binding.tvTotalKcal.text     = "3.394"
-        binding.tvTotalSessions.text = "5"
-
-        // Grafik jarak harian
-        binding.distanceChart.setData(weeklyData, activeDay = 2)
-
-        // Personal record
-        binding.tvPRDistance.text   = "18.4 km · Sepeda"
-        binding.tvPRCalories.text   = "1.840 kcal · Hiking"
-        binding.tvBestElevation.text = "+820 m · Hiking"
-        binding.tvBestPace.text     = "5:48 min/km · Lari"
-    }
-
-    private fun loadMonthlyData() {
-        binding.tvTotalKm.text       = "148.6"
-        binding.tvTotalKcal.text     = "14.820"
-        binding.tvTotalSessions.text = "22"
-
-        binding.distanceChart.setData(monthlyData, activeDay = 2)
-
-        binding.tvPRDistance.text   = "18.4 km · Sepeda"
-        binding.tvPRCalories.text   = "1.840 kcal · Hiking"
-        binding.tvBestElevation.text = "+820 m · Hiking"
-        binding.tvBestPace.text     = "5:48 min/km · Lari"
     }
 
     private fun setActivePeriod(active: TextView) {

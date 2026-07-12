@@ -43,4 +43,49 @@ interface WorkoutSessionDao {
     // Hapus semua riwayat user
     @Query("DELETE FROM workout_sessions WHERE userId = :userId")
     suspend fun deleteAllByUser(userId: String)
+
+    // Total jarak, kalori, jumlah sesi dalam rentang waktu
+    @Query("""SELECT SUM(distanceKm) as totalDistance,
+                    SUM(caloriesKcal) as totalCalories,
+                    COUNT(*) as sessionCount
+             FROM workout_sessions
+             WHERE userId = :userId
+             AND startedAt BETWEEN :weekStart AND :weekEnd""")
+    suspend fun getWeeklyAggregate(
+        userId: String,
+        weekStart: Long,
+        weekEnd: Long
+    ): WeeklyAggregate
+
+    // Jarak maksimum per aktivitas (untuk personal record)
+    @Query("""SELECT MAX(distanceKm) FROM workout_sessions
+              WHERE userId = :userId AND activityType = :type""")
+    suspend fun getMaxDistance(userId: String, type: String): Double?
+
+    // Kalori maksimum
+    @Query("""SELECT MAX(caloriesKcal) FROM workout_sessions
+              WHERE userId = :userId""")
+    suspend fun getMaxCalories(userId: String): Double?
+
+    // Elevasi tertinggi
+    @Query("""SELECT MAX(elevGainM) FROM workout_sessions
+              WHERE userId = :userId""")
+    suspend fun getMaxElevation(userId: String): Double?
+
+    // Pace terbaik (nilai terkecil = tercepat)
+    @Query("""SELECT MIN(avgPace) FROM workout_sessions
+              WHERE userId = :userId AND activityType = 'RUNNING'""")
+    suspend fun getBestPace(userId: String): Double?
+
+    // Ambil sesi dengan jarak terpanjang
+    @Query("""SELECT * FROM workout_sessions
+              WHERE userId = :userId AND activityType = :type
+              ORDER BY distanceKm DESC LIMIT 1""")
+    suspend fun getLongestSession(userId: String, type: String): WorkoutSessionEntity?
+
+    // Ambil sesi dengan kalori terbanyak
+    @Query("""SELECT * FROM workout_sessions
+              WHERE userId = :userId
+              ORDER BY caloriesKcal DESC LIMIT 1""")
+    suspend fun getHighestCaloriesSession(userId: String): WorkoutSessionEntity?
 }
