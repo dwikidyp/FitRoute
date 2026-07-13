@@ -8,26 +8,33 @@ import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.fitroute.databinding.FragmentDetailSessionBinding
 import com.fitroute.util.ShareImageGenerator
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.PolylineOptions
+import android.graphics.Color
+import com.fitroute.R
 import kotlinx.coroutines.launch
-import java.io.File
-import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-class DetailSessionFragment : Fragment() {
+class DetailSessionFragment : Fragment(), OnMapReadyCallback {
 
     private var _binding: FragmentDetailSessionBinding? = null
     private val binding get() = _binding!!
     private val viewModel: DetailSessionViewModel by viewModels()
+    private var googleMap: GoogleMap? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -41,15 +48,17 @@ class DetailSessionFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Setup peta
+        val mapFragment = childFragmentManager
+            .findFragmentById(R.id.mapPreview) as SupportMapFragment
+        mapFragment.getMapAsync(this)
+
         val sessionId = arguments?.getString("session_id") ?: return
         viewModel.loadDetail(sessionId)
 
-        // Observe state
         lifecycleScope.launch {
             viewModel.detailState.collect { state ->
                 if (state.isLoading) return@collect
-
-                // Navigasi balik jika sudah dihapus
                 if (state.navigateBack) {
                     findNavController().popBackStack()
                     return@collect
@@ -57,53 +66,54 @@ class DetailSessionFragment : Fragment() {
 
                 state.session?.let { session ->
 
-                    // Tipe aktivitas
-                    val label = when (session.activityType) {
-                        "RUNNING" -> "🏃 Lari pagi"
-                        "CYCLING" -> "🚴 Sepeda pagi"
-                        "HIKING"  -> "🥾 Hiking"
-                        else      -> session.activityType
+                    // Nama & emoji aktivitas
+                    val (emoji, label) = when (session.activityType) {
+                        "RUNNING" -> Pair("🏃", "Lari")
+                        "CYCLING" -> Pair("🚴", "Sepeda")
+                        "HIKING"  -> Pair("🥾", "Hiking")
+                        else      -> Pair("🏃", session.activityType)
                     }
-                    binding.tvActivityType.text = label
+                    binding.tvActivityEmoji.text = "$emoji "
+                    binding.tvActivityTag.text   = label
 
-                    // Tanggal & waktu
-                    val fmt = SimpleDateFormat(
-                        "EEEE, dd MMM yyyy · HH:mm", Locale("id")
-                    )
-                    binding.tvDateTime.text =
-                        fmt.format(Date(session.startedAt))
+                    // Subtitle header
+                    val dateFmt = SimpleDateFormat("dd MMM", Locale("id"))
+                    val namaAktivitas = when (session.activityType) {
+                        "HIKING"  -> "Hiking"
+                        "RUNNING" -> "Lari pagi"
+                        "CYCLING" -> "Sepeda pagi"
+                        else      -> label
+                    }
+                    binding.tvHeaderSubtitle.text =
+                        "$namaAktivitas · ${dateFmt.format(Date(session.startedAt))}"
 
-                    // Stats utama
-                    binding.tvDistance.text = "%.1f".format(session.distanceKm)
-                    binding.tvCalories.text = "%.0f".format(session.caloriesKcal)
-
+                    // Durasi di header
                     val jam   = session.durationSec / 3600
                     val menit = (session.durationSec % 3600) / 60
-                    val detik = session.durationSec % 60
-                    binding.tvDuration.text = if (jam > 0)
-                        "%d:%02d:%02d".format(jam, menit, detik)
-                    else "%d:%02d".format(menit, detik)
+                    binding.tvHeaderDuration.text = if (jam > 0)
+                        "${jam}j ${menit}m" else "${menit}m"
 
-                    // Stats tambahan
-                    val pMin = session.avgPace.toInt()
-                    val pSec = ((session.avgPace - pMin) * 60).toInt()
-                    binding.tvPace.text    = "%d:%02d".format(pMin, pSec)
-                    binding.tvElevGain.text = "+%.0fm".format(session.elevGainM)
-                    binding.tvSpeed.text   = "%.1f".format(session.avgSpeedKmh)
+                    // Jarak di header
+                    binding.tvHeaderDistance.text =
+                        "%.1f".format(session.distanceKm)
 
-                    // Grafik elevasi dummy
-                    val elev = listOf(100f,115f,135f,160f,180f,175f,165f,155f)
-                    binding.elevationChart.setData(elev, elev.map { it - 8f })
+                    // Stats utama
+                    binding.tvDistance.text =
+                        "%.1f".format(session.distanceKm)
+                    binding.tvCalories.text =
+                        "%,.0f".format(session.caloriesKcal).replace(",", ".")
+                    binding.tvElevGain.text =
+                        "+%.0fm".format(session.elevGainM)
 
-                    // Tombol Bagikan
-                    binding.btnShare.setOnClickListener {
-                        shareSession(session)
-                    }
-
-                    // Tombol Simpan foto
-                    binding.btnSave.setOnClickListener {
-                        saveShareCard(session)
-                    }
+                    // Grafik elevasi
+                    val elevData = listOf(
+                        100f,115f,140f,170f,200f,230f,
+                        250f,240f,220f,200f,185f,170f
+                    )
+                    binding.elevationChart.setData(
+                        elevData,
+                        elevData.map { it - 10f }
+                    )
                 }
             }
         }
@@ -113,73 +123,71 @@ class DetailSessionFragment : Fragment() {
             findNavController().popBackStack()
         }
 
-        // Tombol Hapus — tampilkan konfirmasi dulu
+        // Tombol Hapus
         binding.btnDelete.setOnClickListener {
             AlertDialog.Builder(requireContext())
                 .setTitle("Hapus sesi?")
-                .setMessage("Sesi ini akan dihapus permanen dan tidak bisa dikembalikan.")
+                .setMessage("Data sesi ini akan dihapus permanen.")
                 .setPositiveButton("Hapus") { _, _ ->
-                    viewModel.deleteSession(sessionId)
+                    viewModel.deleteSession(
+                        arguments?.getString("session_id") ?: return@setPositiveButton
+                    )
                 }
                 .setNegativeButton("Batal", null)
                 .show()
         }
-    }
 
-    // Bagikan sebagai teks
-    private fun shareSession(session: com.fitroute.data.local.WorkoutSessionEntity) {
-        val text = """
-            Sesi ${session.activityType.lowercase()} saya di FitRoute:
-            📏 ${"%.1f".format(session.distanceKm)} km
-            ⏱ ${session.durationSec / 60} menit
-            🔥 ${session.caloriesKcal.toInt()} kcal
-            ⛰ +${session.elevGainM.toInt()}m elevasi
-            
-            #FitRoute #Fitness
-        """.trimIndent()
+        // Tombol Bagikan
+        binding.btnShare.setOnClickListener {
+            val session = viewModel.detailState.value.session ?: return@setOnClickListener
+            val text = """
+                Sesi ${session.activityType.lowercase()} di FitRoute!
+                📏 ${"%.1f".format(session.distanceKm)} km
+                ⏱ ${session.durationSec / 60} menit
+                🔥 ${session.caloriesKcal.toInt()} kcal
+                ⛰ +${session.elevGainM.toInt()}m elevasi
+                #FitRoute
+            """.trimIndent()
 
-        val intent = Intent(Intent.ACTION_SEND).apply {
-            type = "text/plain"
-            putExtra(Intent.EXTRA_TEXT, text)
-        }
-        startActivity(Intent.createChooser(intent, "Bagikan via"))
-    }
-
-    // Simpan kartu ringkasan sebagai gambar
-    private fun saveShareCard(session: com.fitroute.data.local.WorkoutSessionEntity) {
-        val bitmap = ShareImageGenerator.generateShareCard(requireContext(), session)
-
-        try {
-            // Simpan ke Pictures/FitRoute
-            val filename = "fitroute_${System.currentTimeMillis()}.png"
-            val resolver = requireContext().contentResolver
-            val contentValues = ContentValues().apply {
-                put(MediaStore.MediaColumns.DISPLAY_NAME, filename)
-                put(MediaStore.MediaColumns.MIME_TYPE, "image/png")
-                put(MediaStore.MediaColumns.RELATIVE_PATH,
-                    Environment.DIRECTORY_PICTURES + "/FitRoute")
-            }
-
-            val uri = resolver.insert(
-                MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues
+            startActivity(
+                Intent.createChooser(
+                    Intent(Intent.ACTION_SEND).apply {
+                        type = "text/plain"
+                        putExtra(Intent.EXTRA_TEXT, text)
+                    }, "Bagikan via"
+                )
             )
-            uri?.let {
-                resolver.openOutputStream(it)?.use { stream ->
-                    bitmap.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, stream)
-                }
-                android.widget.Toast.makeText(
-                    requireContext(),
-                    "Gambar disimpan ke Galeri ✓",
-                    android.widget.Toast.LENGTH_SHORT
-                ).show()
-            }
-        } catch (e: Exception) {
-            android.widget.Toast.makeText(
-                requireContext(),
-                "Gagal menyimpan: ${e.message}",
-                android.widget.Toast.LENGTH_SHORT
-            ).show()
         }
+    }
+
+    override fun onMapReady(map: GoogleMap) {
+        googleMap = map
+        googleMap?.apply {
+            uiSettings.isZoomControlsEnabled    = false
+            uiSettings.isScrollGesturesEnabled  = false
+            uiSettings.isZoomGesturesEnabled    = false
+            mapType = GoogleMap.MAP_TYPE_NORMAL
+        }
+
+        // Gambar rute dummy
+        val dummyRoute = listOf(
+            LatLng(-6.7600, 107.0050),
+            LatLng(-6.7580, 107.0080),
+            LatLng(-6.7560, 107.0110),
+            LatLng(-6.7540, 107.0140),
+            LatLng(-6.7520, 107.0170)
+        )
+
+        googleMap?.addPolyline(
+            PolylineOptions()
+                .addAll(dummyRoute)
+                .color(Color.parseColor("#E07856"))
+                .width(8f)
+        )
+
+        googleMap?.moveCamera(
+            CameraUpdateFactory.newLatLngZoom(dummyRoute[2], 14f)
+        )
     }
 
     override fun onDestroyView() {
