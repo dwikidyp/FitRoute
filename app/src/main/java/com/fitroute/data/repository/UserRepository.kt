@@ -1,9 +1,28 @@
 package com.fitroute.data.repository
 
-class UserRepository {
+import com.fitroute.data.local.UserDao
+import com.fitroute.data.local.UserEntity
+import kotlinx.coroutines.flow.Flow
 
-    // Hapus semua data lokal pengguna saat logout
-    fun clearLocalData() {
+class UserRepository(private val userDao: UserDao) {
 
+    // Ambil profil user
+    fun getUser(userId: String): Flow<UserEntity?> {
+        return userDao.getUser(userId)
+    }
+
+    // Simpan profil baru
+    suspend fun insertUser(user: UserEntity) {
+        userDao.insertUser(user)
+    }
+
+    // Update profil
+    suspend fun updateUser(user: UserEntity) {
+        userDao.updateUser(user)
+    }
+
+    // Hapus saat logout
+    suspend fun deleteUser(userId: String) {
+        userDao.deleteUser(userId)
     }
 }
