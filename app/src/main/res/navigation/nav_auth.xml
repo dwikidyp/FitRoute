@@ -111,6 +111,13 @@
             app:destination="@id/loginFragment"
             app:popUpTo="@id/splashFragment"
             app:popUpToInclusive="true"/>
+        <action
+            android:id="@+id/action_profile_to_settings"
+            app:destination="@id/settingsFragment"/>
     </fragment>
+
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.fitroute.ui.profile.SettingsFragment"/>
 
 </navigation>

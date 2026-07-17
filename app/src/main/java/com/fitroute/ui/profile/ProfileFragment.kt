@@ -87,9 +87,7 @@ class ProfileFragment : Fragment() {
 
         // Tombol Edit
         binding.btnEdit.setOnClickListener {
-            // TODO: navigate ke EditProfileFragment
-            Toast.makeText(requireContext(),
-                "Fitur edit akan segera hadir", Toast.LENGTH_SHORT).show()
+            findNavController().navigate(R.id.action_profile_to_settings)
         }
 
         // Tombol Logout
