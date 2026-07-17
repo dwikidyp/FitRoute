@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
+import com.fitroute.data.local.AppDatabase
 import com.fitroute.data.repository.UserRepository
 import kotlinx.coroutines.launch
 
@@ -125,7 +126,8 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
         return false
     }
 
-    private val userRepository = UserRepository()
+    private val database = AppDatabase.getInstance(application)
+    private val userRepository = UserRepository(database.userDao())
 
     // Fungsi logout
     fun logout() {

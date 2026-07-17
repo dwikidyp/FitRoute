@@ -25,4 +25,8 @@ interface UserDao {
     // Hapus user
     @Query("DELETE FROM users WHERE id = :id")
     suspend fun deleteUser(id: String)
+
+    // Hapus semua user (untuk logout)
+    @Query("DELETE FROM users")
+    suspend fun deleteAllUsers()
 }

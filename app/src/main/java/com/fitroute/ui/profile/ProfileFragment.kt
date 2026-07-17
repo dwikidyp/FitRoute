@@ -34,79 +34,62 @@ class ProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Buat profil dummy jika belum ada
         viewModel.createDummyProfile()
 
-        // Observe profil
         lifecycleScope.launch {
             viewModel.profileState.collect { state ->
                 if (state.isLoading) return@collect
 
                 state.user?.let { user ->
 
-                    // Inisial avatar dari nama
+                    // Avatar inisial
                     val initials = user.fullName
-                        .split(" ")
-                        .take(2)
+                        .split(" ").take(2)
                         .joinToString("") { it.first().uppercase() }
                     binding.tvAvatar.text = initials
 
-                    // Info header
+                    // Header info
                     binding.tvName.text  = user.fullName
                     binding.tvEmail.text = user.email
 
+                    // Stats header
+                    binding.tvWeight.text = "${user.weightKg.toInt()}kg"
+
+                    // Info pribadi
+                    binding.tvAge.text          = "${user.age} tahun"
+                    binding.tvGender.text       = user.gender
+                    binding.tvHeight.text       = "${user.heightCm.toInt()} cm"
+                    binding.tvWeightDetail.text = "${user.weightKg.toInt()} kg"
+                    binding.tvActivityPref.text = when (user.activityPref) {
+                        "RUNNING" -> "Lari"
+                        "CYCLING" -> "Sepeda"
+                        "HIKING"  -> "Hiking"
+                        else      -> "Lari"
+                    }
+
                     // BMI
                     binding.tvBmi.text         = "%.1f".format(state.bmi)
-                    binding.tvBmiCategory.text = state.bmiCategory
+                    binding.tvBmiCategory.text = state.bmiCategory.lowercase()
                     binding.tvBmiCategory.setTextColor(
                         android.graphics.Color.parseColor(
                             when (state.bmiCategory) {
-                                "Normal"   -> "#2D6A4F"
+                                "Normal"   -> "#52B788"
                                 "Kurang"   -> "#FF9800"
                                 "Lebih"    -> "#FF9800"
                                 "Obesitas" -> "#F44336"
-                                else       -> "#2D6A4F"
+                                else       -> "#52B788"
                             }
                         )
                     )
-
-                    // Aktivitas favorit
-                    binding.tvActivityPref.text = when (user.activityPref) {
-                        "RUNNING" -> "🏃"
-                        "CYCLING" -> "🚴"
-                        "HIKING"  -> "🥾"
-                        else      -> "🏃"
-                    }
-
-                    // Data fisik
-                    binding.tvAge.text    = "${user.age} tahun"
-                    binding.tvGender.text = user.gender
-                    binding.etWeight.setText(user.weightKg.toInt().toString())
-                    binding.etHeight.setText(user.heightCm.toInt().toString())
-
-                    // Tombol Simpan
-                    binding.btnSaveProfile.setOnClickListener {
-                        val weightStr = binding.etWeight.text.toString()
-                        val heightStr = binding.etHeight.text.toString()
-
-                        if (weightStr.isBlank() || heightStr.isBlank()) {
-                            Toast.makeText(requireContext(),
-                                "Berat dan tinggi tidak boleh kosong",
-                                Toast.LENGTH_SHORT).show()
-                            return@setOnClickListener
-                        }
-
-                        val updated = user.copy(
-                            weightKg = weightStr.toFloat(),
-                            heightCm = heightStr.toFloat()
-                        )
-                        viewModel.saveProfile(updated)
-                        Toast.makeText(requireContext(),
-                            "Profil disimpan ✓",
-                            Toast.LENGTH_SHORT).show()
-                    }
                 }
             }
+        }
+
+        // Tombol Edit
+        binding.btnEdit.setOnClickListener {
+            // TODO: navigate ke EditProfileFragment
+            Toast.makeText(requireContext(),
+                "Fitur edit akan segera hadir", Toast.LENGTH_SHORT).show()
         }
 
         // Tombol Logout
@@ -114,7 +97,6 @@ class ProfileFragment : Fragment() {
             authViewModel.logout()
         }
 
-        // Observe logout
         authViewModel.authState.observe(viewLifecycleOwner) { state ->
             if (state is AuthState.LoggedOut) {
                 findNavController().navigate(

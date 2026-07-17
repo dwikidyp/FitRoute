@@ -25,4 +25,9 @@ class UserRepository(private val userDao: UserDao) {
     suspend fun deleteUser(userId: String) {
         userDao.deleteUser(userId)
     }
+
+    // Hapus semua data user lokal
+    suspend fun clearLocalData() {
+        userDao.deleteAllUsers()
+    }
 }
