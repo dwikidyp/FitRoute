@@ -23,8 +23,6 @@ class AppSettings(context: Context) {
         context.getSharedPreferences("fitroute_settings_fb", Context.MODE_PRIVATE)
     }
 
-    // ===== PENGATURAN SENSOR =====
-
     // Aktifkan login sidik jari
     var fingerprintEnabled: Boolean
         get()    = prefs.getBoolean("fingerprint_enabled", false)
@@ -45,8 +43,6 @@ class AppSettings(context: Context) {
         get()    = prefs.getBoolean("auto_detect_activity", true)
         set(v)   { prefs.edit().putBoolean("auto_detect_activity", v).apply() }
 
-    // ===== PENGATURAN NOTIFIKASI =====
-
     // Notifikasi personal record
     var notifyPersonalRecord: Boolean
         get()    = prefs.getBoolean("notify_pr", true)
@@ -57,8 +53,6 @@ class AppSettings(context: Context) {
         get()    = prefs.getBoolean("notify_weekly", true)
         set(v)   { prefs.edit().putBoolean("notify_weekly", v).apply() }
 
-    // ===== PENGATURAN TARGET =====
-
     // Target jarak mingguan
     var weeklyDistanceTarget: Float
         get()    = prefs.getFloat("weekly_target_km", 50f)
@@ -68,4 +62,19 @@ class AppSettings(context: Context) {
     fun resetToDefault() {
         prefs.edit().clear().apply()
     }
+
+    // Kunci otomatis
+    var autoLockEnabled: Boolean
+        get()  = prefs.getBoolean("auto_lock", false)
+        set(v) { prefs.edit().putBoolean("auto_lock", v).apply() }
+
+    // Sinkronisasi cloud
+    var cloudSyncEnabled: Boolean
+        get()  = prefs.getBoolean("cloud_sync", true)
+        set(v) { prefs.edit().putBoolean("cloud_sync", v).apply() }
+
+    // Mode offline
+    var offlineModeEnabled: Boolean
+        get()  = prefs.getBoolean("offline_mode", false)
+        set(v) { prefs.edit().putBoolean("offline_mode", v).apply() }
 }

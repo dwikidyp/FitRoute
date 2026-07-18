@@ -31,77 +31,68 @@ class SettingsFragment : Fragment() {
 
         appSettings = AppSettings(requireContext())
 
-        // Load nilai awal dari AppSettings
+        // Load nilai awal
         loadSettings()
 
-        // ===== LISTENER SWITCH =====
+        // ===== KEAMANAN =====
 
-        // Barometer
-        binding.switchBarometer.setOnCheckedChangeListener { _, checked ->
-            appSettings.barometerEnabled = checked
-            showSaved("Barometer ${if (checked) "aktif" else "nonaktif"}")
-        }
-
-        // GPS akurasi tinggi
-        binding.switchGpsHigh.setOnCheckedChangeListener { _, checked ->
-            appSettings.gpsHighAccuracy = checked
-            // Ubah mode GPS di TrackingService jika sedang berjalan
-            val priority = if (checked)
-                Priority.PRIORITY_HIGH_ACCURACY
-            else
-                Priority.PRIORITY_BALANCED_POWER_ACCURACY
-            showSaved("GPS: ${if (checked) "Akurasi tinggi" else "Hemat baterai"}")
-        }
-
-        // Deteksi aktivitas otomatis
-        binding.switchAutoDetect.setOnCheckedChangeListener { _, checked ->
-            appSettings.autoDetectActivity = checked
-            showSaved("Deteksi aktivitas ${if (checked) "aktif" else "nonaktif"}")
-        }
-
-        // Login sidik jari
         binding.switchFingerprint.setOnCheckedChangeListener { _, checked ->
             appSettings.fingerprintEnabled = checked
             showSaved("Login sidik jari ${if (checked) "aktif" else "nonaktif"}")
         }
 
-        // Notifikasi PR
-        binding.switchNotifyPR.setOnCheckedChangeListener { _, checked ->
-            appSettings.notifyPersonalRecord = checked
+        binding.switchAutoLock.setOnCheckedChangeListener { _, checked ->
+            appSettings.autoLockEnabled = checked
+            showSaved("Kunci otomatis ${if (checked) "aktif" else "nonaktif"}")
         }
 
-        // Notifikasi target mingguan
-        binding.switchNotifyWeekly.setOnCheckedChangeListener { _, checked ->
-            appSettings.notifyWeeklyGoal = checked
+        // ===== SENSOR & AKURASI =====
+
+        binding.switchGpsHigh.setOnCheckedChangeListener { _, checked ->
+            appSettings.gpsHighAccuracy = checked
+            showSaved(if (checked) "GPS: Akurasi tinggi" else "GPS: Hemat baterai")
         }
 
-        // Target mingguan — simpan saat focus hilang
-        binding.etWeeklyTarget.setOnFocusChangeListener { _, hasFocus ->
-            if (!hasFocus) {
-                val value = binding.etWeeklyTarget.text.toString().toFloatOrNull()
-                if (value != null && value > 0) {
-                    appSettings.weeklyDistanceTarget = value
-                    showSaved("Target: ${value.toInt()} km/minggu")
-                }
+        binding.switchBarometer.setOnCheckedChangeListener { _, checked ->
+            appSettings.barometerEnabled = checked
+            showSaved("Barometer ${if (checked) "aktif" else "nonaktif"}")
+        }
+
+        binding.switchAutoDetect.setOnCheckedChangeListener { _, checked ->
+            appSettings.autoDetectActivity = checked
+            showSaved("Deteksi aktivitas AI ${if (checked) "aktif" else "nonaktif"}")
+        }
+
+        // ===== PENYIMPANAN =====
+
+        binding.switchCloudSync.setOnCheckedChangeListener { _, checked ->
+            appSettings.cloudSyncEnabled = checked
+            // Jika cloud sync dimatikan, aktifkan offline mode otomatis
+            if (!checked) {
+                binding.switchOfflineMode.isChecked = true
+                appSettings.offlineModeEnabled = true
             }
+            showSaved(if (checked) "Sinkronisasi cloud aktif" else "Sinkronisasi cloud nonaktif")
         }
 
-        // Tombol back
+        binding.switchOfflineMode.setOnCheckedChangeListener { _, checked ->
+            appSettings.offlineModeEnabled = checked
+            showSaved(if (checked) "Mode offline aktif" else "Mode offline nonaktif")
+        }
+
         binding.btnBack.setOnClickListener {
             findNavController().popBackStack()
         }
     }
 
     private fun loadSettings() {
-        binding.switchBarometer.isChecked    = appSettings.barometerEnabled
-        binding.switchGpsHigh.isChecked      = appSettings.gpsHighAccuracy
-        binding.switchAutoDetect.isChecked   = appSettings.autoDetectActivity
         binding.switchFingerprint.isChecked  = appSettings.fingerprintEnabled
-        binding.switchNotifyPR.isChecked     = appSettings.notifyPersonalRecord
-        binding.switchNotifyWeekly.isChecked = appSettings.notifyWeeklyGoal
-        binding.etWeeklyTarget.setText(
-            appSettings.weeklyDistanceTarget.toInt().toString()
-        )
+        binding.switchAutoLock.isChecked     = appSettings.autoLockEnabled
+        binding.switchGpsHigh.isChecked      = appSettings.gpsHighAccuracy
+        binding.switchBarometer.isChecked    = appSettings.barometerEnabled
+        binding.switchAutoDetect.isChecked   = appSettings.autoDetectActivity
+        binding.switchCloudSync.isChecked    = appSettings.cloudSyncEnabled
+        binding.switchOfflineMode.isChecked  = appSettings.offlineModeEnabled
     }
 
     private fun showSaved(message: String) {
