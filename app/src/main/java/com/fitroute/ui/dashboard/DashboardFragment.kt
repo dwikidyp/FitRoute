@@ -65,6 +65,13 @@ class DashboardFragment : Fragment() {
             binding.viewProgressFill.layoutParams = params
         }
 
+        // Tap icon notifikasi di header dashboard
+        binding.ivProfile.setOnClickListener {
+            findNavController().navigate(
+                R.id.action_dashboard_to_notifications
+            )
+        }
+
         // Tombol mulai sesi
         binding.btnStartSession.setOnClickListener {
             findNavController().navigate(R.id.action_dashboard_to_activityPicker)

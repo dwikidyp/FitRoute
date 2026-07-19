@@ -6,14 +6,15 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 
 @Database(
-    entities = [WorkoutSessionEntity::class, UserEntity::class],
-    version = 2,
+    entities = [WorkoutSessionEntity::class, UserEntity::class, NotificationEntity::class],
+    version = 3,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun workoutSessionDao(): WorkoutSessionDao
     abstract fun userDao(): UserDao
+    abstract fun notificationDao(): NotificationDao
 
     companion object {
         @Volatile
