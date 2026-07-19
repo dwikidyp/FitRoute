@@ -40,6 +40,12 @@ interface AuthApiService {
     // Enroll public key biometric
     @POST("rest/v1/biometric_keys")
     suspend fun enrollBiometric(@Body request: BiometricEnrollRequest): BiometricEnrollResponse
+
+    // Upload sesi ke Supabase
+    @POST("rest/v1/workout_sessions")
+    suspend fun uploadSessions(
+        @Body sessions: List<SessionDto>
+    ): retrofit2.Response<Unit>
 }
 
 data class BiometricEnrollRequest(

@@ -5,8 +5,12 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.fitroute.data.local.AppDatabase
+import com.fitroute.data.repository.SessionRepository
 import com.fitroute.domain.usecase.CalorieCalculationUseCase
 import com.fitroute.domain.usecase.MetValue
+import com.fitroute.domain.usecase.SessionSummary
+import com.fitroute.service.SyncWorker
 import com.fitroute.service.TrackingService
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -82,9 +86,38 @@ class LiveTrackingViewModel(application: Application) : AndroidViewModel(applica
     fun stopSession() {
         viewModelScope.launch {
             TrackingService.isRunning = false
-            // TODO: sessionRepository.saveSession(buildSummary())
+            val summary = buildSummary()
+
+            val db            = AppDatabase.getInstance(getApplication())
+            val sessionRepo   = SessionRepository(db.workoutSessionDao())
+            sessionRepo.saveSession(summary)
+
+            SyncWorker.scheduleOneTime(getApplication())
             _navigateToSummary.postValue(true)
         }
+    }
+
+    private fun buildSummary(): SessionSummary {
+        val now          = System.currentTimeMillis()
+        val durationSec  = TrackingService.durationSeconds.toInt()
+        val distanceKm   = TrackingService.totalDistanceKm
+        val durationHrs  = durationSec / 3600.0
+
+        return SessionSummary(
+            userId        = "user_123",
+            activityType  = TrackingService.currentActivity.name,
+            distanceKm    = distanceKm,
+            durationSec   = durationSec,
+            caloriesKcal  = TrackingService.totalCalories,
+            avgPace       = if (distanceKm > 0) durationHrs * 60 / distanceKm else 0.0,
+            avgSpeedKmh   = if (durationHrs > 0) distanceKm / durationHrs else 0.0,
+            elevGainM     = TrackingService.totalElevationGain,
+            elevLossM     = 0.0,
+            maxElevationM = TrackingService.latestElevation,
+            routeGeoJson  = "{}",
+            startedAt     = now - (durationSec * 1000L),
+            endedAt       = now
+        )
     }
 }
 
