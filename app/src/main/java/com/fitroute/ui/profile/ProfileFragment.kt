@@ -90,6 +90,10 @@ class ProfileFragment : Fragment() {
             findNavController().navigate(R.id.action_profile_to_settings)
         }
 
+        binding.btnAbout.setOnClickListener {
+            findNavController().navigate(R.id.action_profile_to_about)
+        }
+
         // Tombol Logout
         binding.btnLogout.setOnClickListener {
             authViewModel.logout()

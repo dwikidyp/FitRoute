@@ -117,6 +117,9 @@
         <action
             android:id="@+id/action_profile_to_settings"
             app:destination="@id/settingsFragment"/>
+        <action
+            android:id="@+id/action_profile_to_about"
+            app:destination="@id/aboutFragment"/>
     </fragment>
 
     <fragment
@@ -126,5 +129,15 @@
     <fragment
         android:id="@+id/notificationsFragment"
         android:name="com.fitroute.ui.notification.NotificationsFragment"/>
+
+    <fragment
+        android:id="@+id/aboutFragment"
+        android:name="com.fitroute.ui.profile.AboutFragment">
+        <action
+            android:id="@+id/action_aboutFragment_to_loginFragment"
+            app:destination="@id/loginFragment"
+            app:popUpTo="@id/splashFragment"
+            app:popUpToInclusive="true"/>
+    </fragment>
 
 </navigation>

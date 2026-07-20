@@ -596,6 +596,28 @@
 
             </LinearLayout>
 
+            <!-- Tombol Tentang Aplikasi -->
+            <LinearLayout
+                android:id="@+id/btnAbout"
+                android:layout_width="match_parent"
+                android:layout_height="54dp"
+                android:background="@drawable/bg_share_button"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="12dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="ℹ  Tentang Aplikasi"
+                    android:textColor="#2D6A4F"
+                    android:textSize="15sp"
+                    android:textStyle="bold"/>
+
+            </LinearLayout>
+
             <!-- ===== TOMBOL LOGOUT ===== -->
             <LinearLayout
                 android:id="@+id/btnLogout"
