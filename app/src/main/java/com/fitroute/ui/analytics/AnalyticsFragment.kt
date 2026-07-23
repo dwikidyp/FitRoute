@@ -12,6 +12,7 @@ import androidx.lifecycle.lifecycleScope
 import com.fitroute.R
 import com.fitroute.databinding.FragmentAnalyticsBinding
 import kotlinx.coroutines.launch
+import androidx.navigation.fragment.findNavController
 
 class AnalyticsFragment : Fragment() {
 
@@ -19,7 +20,6 @@ class AnalyticsFragment : Fragment() {
     private val binding get() = _binding!!
     private val viewModel: AnalyticsViewModel by viewModels()
 
-    // Data chart per hari
     private val weeklyChart = listOf(5.4f, 0f, 7.8f, 6.2f, 0f, 12.1f, 2.7f)
     private val monthlyChart = listOf(22f, 18f, 34f, 28f, 15f, 40f, 32f)
 
@@ -35,18 +35,23 @@ class AnalyticsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Muat data awal
         viewModel.loadWeeklyData()
 
-        // Observe data dari ViewModel
         lifecycleScope.launch {
             viewModel.uiState.collect { state ->
+
+                if (state.isLoggedOut) {
+                    findNavController().navigate(
+                        R.id.action_analyticsFragment_to_loginFragment
+                    )
+                    return@collect
+                }
+
                 if (state.isLoading) return@collect
 
                 val agg = state.aggregate
                 val pr  = state.personalRecords
 
-                // Stats ringkasan
                 binding.tvTotalKm.text =
                     "%.1f".format(agg.totalDistance)
                 binding.tvTotalKcal.text =
@@ -55,7 +60,6 @@ class AnalyticsFragment : Fragment() {
                 binding.tvTotalSessions.text =
                     agg.sessionCount.toString()
 
-                // Personal records
                 binding.tvPRDistance.text =
                     "%.1f km · ${pr.longestDistanceActivity}"
                         .format(pr.longestDistanceKm)
@@ -75,10 +79,8 @@ class AnalyticsFragment : Fragment() {
             }
         }
 
-        // Chart mingguan
         binding.distanceChart.setData(weeklyChart, activeDay = 2)
 
-        // Period selector
         binding.chipWeek.setOnClickListener {
             setActivePeriod(binding.chipWeek)
             viewModel.loadWeeklyData()

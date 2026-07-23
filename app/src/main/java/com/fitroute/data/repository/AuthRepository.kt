@@ -13,7 +13,7 @@ class AuthRepository(private val apiService: AuthApiService) {
     suspend fun login(email: String, password: String): Result<AuthResponse> {
         return try {
             val response = apiService.login(LoginRequest(email, password))
-            Result.Success(AuthResponse(token = response.access_token))
+            Result.Success(AuthResponse(token = response.access_token, userId = response.user.id))
         } catch (e: Exception) {
             Result.Error(e.message ?: "Login gagal")
         }
@@ -23,7 +23,7 @@ class AuthRepository(private val apiService: AuthApiService) {
     suspend fun register(email: String, password: String): Result<AuthResponse> {
         return try {
             val response = apiService.register(RegisterRequest(email, password))
-            Result.Success(AuthResponse(token = response.access_token))
+            Result.Success(AuthResponse(token = response.access_token, userId = response.user.id))
         } catch (e: Exception) {
             Result.Error(e.message ?: "Registrasi gagal")
         }

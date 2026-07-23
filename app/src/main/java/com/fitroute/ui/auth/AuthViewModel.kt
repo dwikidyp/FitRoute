@@ -8,6 +8,8 @@ import androidx.lifecycle.viewModelScope
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import com.fitroute.data.local.AppDatabase
+import com.fitroute.data.remote.RetrofitClient
+import com.fitroute.data.repository.AuthRepository
 import com.fitroute.data.repository.UserRepository
 import kotlinx.coroutines.launch
 
@@ -25,7 +27,7 @@ sealed class AuthState {
 }
 
 // Data class response token
-data class AuthResponse(val token: String)
+data class AuthResponse(val token: String, val userId: String)
 
 class AuthViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -51,6 +53,11 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
         EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
     )
 
+    // Repository
+    private val database = AppDatabase.getInstance(application)
+    private val userRepository = UserRepository(database.userDao())
+    private val authRepository = AuthRepository(RetrofitClient.authApiService)
+
     // Cek sesi login sebelumnya
     fun checkSession() {
         viewModelScope.launch {
@@ -63,32 +70,35 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    // Login dengan email & password
     fun loginWithEmail(email: String, password: String) {
         viewModelScope.launch {
             _loginResult.postValue(Result.Loading)
-            try {
-                // TODO: Ganti dengan API call Retrofit
-                // val response = authRepository.login(email, password)
-                // Simulasi sukses:
-                val fakeToken = "eyJhbGciOiJIUzI1NiJ9.fake_token"
-                _loginResult.postValue(Result.Success(AuthResponse(fakeToken)))
-            } catch (e: Exception) {
-                _loginResult.postValue(Result.Error(e.message ?: "Login gagal"))
+            val result = authRepository.login(email, password)
+            _loginResult.postValue(result)
+
+            if (result is Result.Success) {
+                saveToken(result.data.token)
+                saveUserId(result.data.userId)
             }
         }
+    }
+
+    private fun saveUserId(userId: String) {
+        securePrefs.edit().putString("user_id", userId).apply()
     }
 
     // Registrasi user baru
     fun register(user: UserRequest) {
         viewModelScope.launch {
             _registerResult.postValue(Result.Loading)
-            try {
-                // TODO: Implementasi registrasi dengan Retrofit
-                // Simulasi sukses:
+            val result = authRepository.register(user.email, user.password)
+            
+            if (result is Result.Success) {
+                saveToken(result.data.token)
+                saveUserId(result.data.userId)
                 _registerResult.postValue(Result.Success(Unit))
-            } catch (e: Exception) {
-                _registerResult.postValue(Result.Error(e.message ?: "Registrasi gagal"))
+            } else if (result is Result.Error) {
+                _registerResult.postValue(Result.Error(result.message))
             }
         }
     }
@@ -97,8 +107,9 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
     fun loginWithBiometric() {
         viewModelScope.launch {
             val token = securePrefs.getString("auth_token", null)
+            val userId = securePrefs.getString("user_id", "") ?: ""
             if (token != null) {
-                _loginResult.postValue(Result.Success(AuthResponse(token)))
+                _loginResult.postValue(Result.Success(AuthResponse(token, userId)))
             } else {
                 _loginResult.postValue(Result.Error("Token tidak ditemukan, login dengan email"))
             }
@@ -108,11 +119,13 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
     fun enrollBiometric(publicKey: String) {
         viewModelScope.launch {
             _biometricEnrollResult.postValue(Result.Loading)
-            try {
-                // TODO: Kirim public key ke server
+            val deviceUid = securePrefs.getString("device_uid", "unknown") ?: "unknown"
+            val result = authRepository.enrollBiometric(publicKey, deviceUid)
+            
+            if (result is Result.Success) {
                 _biometricEnrollResult.postValue(Result.Success(Unit))
-            } catch (e: Exception) {
-                _biometricEnrollResult.postValue(Result.Error(e.message ?: "Enrollment gagal"))
+            } else if (result is Result.Error) {
+                _biometricEnrollResult.postValue(Result.Error(result.message))
             }
         }
     }
@@ -126,21 +139,14 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
         return false
     }
 
-    private val database = AppDatabase.getInstance(application)
-    private val userRepository = UserRepository(database.userDao())
-
-    // Fungsi logout
     fun logout() {
         viewModelScope.launch {
-            // 1. Hapus token dari EncryptedSharedPrefs
             securePrefs.edit()
                 .remove("auth_token")
                 .apply()
 
-            // 2. Hapus data lokal pengguna
             userRepository.clearLocalData()
 
-            // 3. Kembali ke halaman login
             _authState.postValue(AuthState.LoggedOut)
         }
     }

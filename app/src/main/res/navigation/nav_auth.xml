@@ -105,6 +105,11 @@
     <fragment
         android:id="@+id/analyticsFragment"
         android:name="com.fitroute.ui.analytics.AnalyticsFragment"/>
+        <action
+            android:id="@+id/action_analyticsFragment_to_loginFragment"
+            app:destination="@id/loginFragment"
+            app:popUpTo="@id/splashFragment"
+            app:popUpToInclusive="true"/>
 
     <fragment
         android:id="@+id/profileFragment"
