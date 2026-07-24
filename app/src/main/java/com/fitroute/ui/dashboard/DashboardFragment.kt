@@ -36,7 +36,7 @@ class DashboardFragment : Fragment() {
             onGranted = {
                 Toast.makeText(requireContext(),
                     "Izin lokasi diberikan!", Toast.LENGTH_SHORT).show()
-                // TODO: mulai tracking di sini
+                findNavController().navigate(R.id.action_dashboard_to_activityPicker)
             },
             onDenied = {
                 Toast.makeText(requireContext(),
@@ -65,7 +65,6 @@ class DashboardFragment : Fragment() {
             binding.viewProgressFill.layoutParams = params
         }
 
-        // Tap icon notifikasi di header dashboard
         binding.ivProfile.setOnClickListener {
             findNavController().navigate(
                 R.id.action_dashboard_to_notifications
@@ -74,20 +73,28 @@ class DashboardFragment : Fragment() {
 
         // Tombol mulai sesi
         binding.btnStartSession.setOnClickListener {
-            findNavController().navigate(R.id.action_dashboard_to_activityPicker)
-            Toast.makeText(requireContext(), "Memulai sesi...", Toast.LENGTH_SHORT).show()
+            if (PermissionHelper.hasFineLocationPermission(requireActivity())) {
+                findNavController().navigate(R.id.action_dashboard_to_activityPicker)
+            } else {
+                locationLauncher.launch(
+                    arrayOf(
+                        Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACTIVITY_RECOGNITION
+                    )
+                )
+            }
         }
 
         // Bottom navigation
         binding.navHome.setOnClickListener {  }
         binding.navRoute.setOnClickListener {
-            // TODO: navigate ke rute
+            findNavController().navigate(R.id.action_dashboard_to_activityPicker)
         }
         binding.navHistory.setOnClickListener {
-            // TODO: navigate ke riwayat
+            findNavController().navigate(R.id.action_dashboard_to_history)
         }
         binding.navProfile.setOnClickListener {
-            // TODO: navigate ke profil
+            findNavController().navigate(R.id.action_dashboard_to_profile)
         }
 
 
@@ -100,9 +107,11 @@ class DashboardFragment : Fragment() {
             )
         }
 
-
-
-        
+        viewModel.authState.observe(viewLifecycleOwner) { state ->
+            if (state is AuthState.LoggedOut) {
+                findNavController().navigate(R.id.action_dashboard_to_login)
+            }
+        }
     }
 
     override fun onDestroyView() {
